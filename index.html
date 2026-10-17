@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="./apple.png">
+<title>Static UI</title>
+<style>
+    /* Ensure body can grow and fill the safe areas edge-to-edge */
+    html, body {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #fff;
+        overflow-x: hidden; /* Prevents side-to-side scroll */
+    }
+
+    body {
+        padding-top: env(safe-area-inset-top);
+    }
+    
+    .container { 
+        position: relative; 
+        width: 390px; 
+        margin: 0 auto; 
+    }
+
+    /* The background image defines the height of the container */
+    .bg-image { width: 100%; display: block; }
+
+    #clock { 
+        position: absolute; 
+        top: 352px; 
+        left: 16px; 
+        font-family: sans-serif; 
+        font-weight: 700; 
+        font-size: 15px; 
+        color: #000; 
+        z-index: 100; 
+        user-select: none; 
+        background-color: transparent; 
+        padding: 1px 4px; 
+        border-radius: 2px;
+        cursor: move;
+        touch-action: none;
+    }
+
+    /* White block sitting exactly behind the clock, just above the background image */
+    #clock-bg {
+        position: absolute;
+        top: 352px;
+        left: 16px;
+        background-color: #ffffff;
+        border-radius: 2px;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    /* Moveable and lockable white block (390px wide by 100px high), positioned at the bottom of the container */
+    #white-block {
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        width: 390px;
+        height: 100px;
+        background-color: #ffffff;
+        z-index: 9;
+        cursor: move;
+        touch-action: none;
+        user-select: none;
+    }
+
+    /* Fixed yellow/orange gradient block that fills the top safe area/header zone and scrolls with the screen */
+    #yellow-block {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: calc(55px + env(safe-area-inset-top));
+        background: linear-gradient(to right, 
+            #f2b15d, 
+            #f1b262, 
+            #f1b765, 
+            #f3bc6a, 
+            #f4c06d, 
+            #f4c575, 
+            #f7c97b, 
+            #f7d281
+        );
+        z-index: 999;
+        user-select: none;
+    }
+
+    #name-img { position: absolute; top: 154.41px; left: 153.56px; width: 198px; z-index: 10; }
+    #car-img { position: absolute; top: 391.27px; left: 125.95px; width: 207px; z-index: 10; opacity: 0.7; }
+    #rest-img { position: absolute; top: 619.71px; left: 6.70px; width: 381px; z-index: 10; }
+    
+    /* Mobile-optimized fixed elements */
+    #pulse-logo { 
+        position: fixed; 
+        top: calc(242.52px + env(safe-area-inset-top)); 
+        left: 25%; 
+        transform: translateX(-50%); 
+        width: 200px; 
+        filter: brightness(0) invert(80%) sepia(0) saturate(0); 
+        z-index: 5; 
+        animation: pulse-animation 1.6s infinite ease-in-out; 
+    }
+    
+    #header-img { 
+        position: fixed; 
+        top: env(safe-area-inset-top); 
+        left: 50%; 
+        transform: translateX(-50%); 
+        width: 390px; 
+        z-index: 1000; 
+        pointer-events: none;
+    }
+    
+    #bottom-img { 
+        position: fixed; 
+        bottom: 0px; 
+        left: 50%;
+        transform: translateX(-50%);
+        width: 390px; 
+        z-index: 10; 
+    }
+ 
+    /* button.png locked in position for mobile */
+    #qr-nav-btn {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 35px;
+        width: 80px;
+        height: auto;
+        cursor: pointer;
+        z-index: 200;
+        transition: opacity 0.2s;
+    }
+
+    #qr-nav-btn:hover {
+        opacity: 0.9;
+    }
+
+    /* The close button inside the popup */
+    #qr-close-btn {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 38px;
+        width: 75px;
+        height: auto;
+        cursor: pointer;
+        z-index: 2001;
+        transition: opacity 0.2s;
+    }
+
+    #qr-close-btn:hover {
+        opacity: 0.9;
+    }
+
+    @keyframes pulse-animation { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+    /* QR Popup overlay */
+    #qr-popup-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #fff;
+        z-index: 2000;
+        overflow: hidden;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #qr-popup-overlay.active {
+        display: flex;
+    }
+
+    #qr-popup-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #qr-popup-bg {
+        max-width: 100vw;
+        max-height: 100vh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+        pointer-events: none;
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+</style>
+</head>
+<body>
+
+<div id="yellow-block"></div>
+
+<div class="container" id="main-container">
+    <img src="./background.png" class="bg-image" id="bg-img" alt="Background">
+    <div id="white-block"></div>
+    <div id="clock-bg"></div>
+    <div id="clock"><span id="clock-text"></span></div>
+    <img src="./name.png" id="name-img" alt="Name Overlay">
+    <img src="./car.png" id="car-img" alt="Car Overlay">
+    <img src="./rest.png" id="rest-img" alt="Rest Overlay">
+</div>
+
+<!-- button.png locked in position -->
+<img src="./button.png" id="qr-nav-btn" alt="QR Code Button">
+
+<img src="./bottom.png" id="bottom-img" alt="Bottom">
+<img src="./pulse-logo.png" id="pulse-logo" alt="Pulsing Logo">
+<img src="./header.png" id="header-img" alt="Header">
+
+<!-- QR Popup overlay, shown when button.png is clicked -->
+<div id="qr-popup-overlay">
+    <div id="qr-popup-container">
+        <img src="./qrback.png" id="qr-popup-bg" alt="QR Background">
+    </div>
+    <!-- Second button.png, locked in position, closes the popup -->
+    <img src="./button.png" id="qr-close-btn" alt="Back Button">
+</div>
+
+<script>
+    const qrBtn = document.getElementById('qr-nav-btn');
+
+    qrBtn.addEventListener('click', (e) => {
+        openQrPopup();
+    });
+
+    function openQrPopup() {
+        document.getElementById('qr-popup-overlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeQrPopup() {
+        document.getElementById('qr-popup-overlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('qr-close-btn').addEventListener('click', closeQrPopup);
+
+    // Generic drag function for elements inside the main container
+    function makeDraggable(element, onMove) {
+        let offsetX, offsetY;
+
+        element.addEventListener('mousedown', startDrag);
+        element.addEventListener('touchstart', startDrag, {passive: false});
+
+        function startDrag(e) {
+            const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+            
+            const rect = element.getBoundingClientRect();
+            const container = document.getElementById('main-container');
+            const containerRect = container.getBoundingClientRect();
+
+            if (element.style.transform && element.style.transform.includes('translateX')) {
+                element.style.transform = 'none';
+                element.style.left = (rect.left - containerRect.left) + 'px';
+            }
+
+            offsetX = clientX - rect.left;
+            offsetY = clientY - rect.top;
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag, {passive: false});
+            document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchend', stopDrag);
+        }
+
+        function drag(e) {
+            const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+            
+            const container = document.getElementById('main-container');
+            const containerRect = container.getBoundingClientRect();
+            
+            element.style.bottom = 'auto'; 
+            element.style.left = (clientX - offsetX - containerRect.left) + 'px';
+            element.style.top = (clientY - offsetY + window.scrollY - containerRect.top) + 'px';
+
+            if (onMove) onMove();
+        }
+
+        function stopDrag() {
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('touchmove', drag);
+        }
+    }
+
+    makeDraggable(document.getElementById('white-block'));
+
+    const clockEl = document.getElementById('clock');
+    const clockBgEl = document.getElementById('clock-bg');
+
+    function syncClockBg() {
+        clockBgEl.style.left = clockEl.style.left || clockEl.offsetLeft + 'px';
+        clockBgEl.style.top = clockEl.style.top || clockEl.offsetTop + 'px';
+        clockBgEl.style.width = clockEl.offsetWidth + 'px';
+        clockBgEl.style.height = clockEl.offsetHeight + 'px';
+    }
+
+    makeDraggable(clockEl, syncClockBg);
+
+    function updateClock() {
+        const now = new Date();
+        let hours = now.getHours();
+        const ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12 || 12;
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const timeString = `${now.getDate()} ${now.toLocaleString('default', {month:'short'})} ${now.getFullYear()} ${hours}:${minutes}${ampm}`;
+        document.getElementById('clock-text').textContent = timeString;
+        syncClockBg();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+</script>
+</body>
+</html>
