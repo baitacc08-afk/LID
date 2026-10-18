@@ -126,17 +126,32 @@ img {
     z-index: 10;
 }
 #pulse-logo {
+
     position: fixed;
+
     top: calc(247.42px + env(safe-area-inset-top));
-    left: 546.26px;
-    transform: none;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
     width: 200.21px;
+
     height: 174.2px;
-    object-fit: fill;
+
+    max-width: 90vw;
+
+    object-fit: contain;
+
     filter: brightness(0) invert(80%) sepia(0) saturate(0);
+
     z-index: 5;
+
     animation: pulse-animation 1.6s infinite ease-in-out;
+
 }
+
+
 #header-img {
     position: fixed;
     top: env(safe-area-inset-top);
@@ -148,13 +163,25 @@ img {
     pointer-events: none;
 }
 #bottom-img {
+
     position: fixed;
-    top: 536.35px;
-    left: 468.5px;
+
+    bottom: 0;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
     width: 390px;
+
+    max-width: 100vw;
+
     height: 117.65px;
-    object-fit: fill;
-    z-index: 10;
+
+    object-fit: contain;
+
+    z-index: 100;
+
 }
 #qr-nav-btn {
     position: fixed;
