@@ -9,332 +9,320 @@
 <title>Static UI - Layout Editor</title>
 
 <style>
-    * {
-        box-sizing: border-box;
-    }
+* {
+    box-sizing: border-box;
+}
 
-    html, body {
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        background-color: #fff;
-        overflow-x: hidden;
-    }
+html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    overflow-x: hidden;
+}
 
-    body {
-        padding-top: env(safe-area-inset-top);
-        font-family: Arial, sans-serif;
-    }
+body {
+    padding-top: env(safe-area-inset-top);
+    font-family: Arial, sans-serif;
+}
 
-    .container {
-        position: relative;
-        width: 390px;
-        max-width: 100%;
-        margin: 0 auto;
-    }
+img {
+    -webkit-user-drag: none;
+    user-select: none;
+}
 
-    .bg-image {
-        width: 100%;
-        height: auto;
-        display: block;
-        pointer-events: none;
-    }
+.container {
+    position: relative;
+    width: 390px;
+    max-width: 100%;
+    margin: 0 auto;
+}
 
-    /* Clock */
-    #clock {
-        position: absolute;
-        top: 352px;
-        left: 16px;
-        font-family: sans-serif;
-        font-weight: 700;
-        font-size: 15px;
-        color: #000;
-        z-index: 100;
-        user-select: none;
-        background-color: transparent;
-        padding: 1px 4px;
-        border-radius: 2px;
-        cursor: move;
-        touch-action: none;
-        white-space: nowrap;
-    }
+.bg-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    pointer-events: none;
+}
 
-    #clock-bg {
-        position: absolute;
-        top: 352px;
-        left: 16px;
-        background-color: #fff;
-        border-radius: 2px;
-        z-index: 1;
-        pointer-events: none;
-    }
+#clock {
+    position: absolute;
+    top: 352px;
+    left: 16px;
+    font-family: sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #000;
+    z-index: 100;
+    user-select: none;
+    background: transparent;
+    padding: 1px 4px;
+    border-radius: 2px;
+    cursor: grab;
+    touch-action: none;
+    white-space: nowrap;
+}
 
-    /* White block */
-    #white-block {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 390px;
-        height: 100px;
-        background-color: #fff;
-        z-index: 9;
-        cursor: move;
-        touch-action: none;
-        user-select: none;
-    }
+#clock-bg {
+    position: absolute;
+    top: 352px;
+    left: 16px;
+    background: #fff;
+    border-radius: 2px;
+    z-index: 1;
+    pointer-events: none;
+}
 
-    /* Yellow header background */
-    #yellow-block {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: calc(55px + env(safe-area-inset-top));
-        background: linear-gradient(
-            to right,
-            #f2b15d,
-            #f1b262,
-            #f1b765,
-            #f3bc6a,
-            #f4c06d,
-            #f4c575,
-            #f7c97b,
-            #f7d281
-        );
-        z-index: 999;
-        user-select: none;
-    }
+#white-block {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 390px;
+    height: 100px;
+    background: #fff;
+    z-index: 9;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
 
-    #name-img {
-        position: absolute;
-        top: 154.41px;
-        left: 153.56px;
-        width: 198px;
-        z-index: 10;
-    }
+#yellow-block {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(55px + env(safe-area-inset-top));
+    background: linear-gradient(
+        to right,
+        #f2b15d,
+        #f1b262,
+        #f1b765,
+        #f3bc6a,
+        #f4c06d,
+        #f4c575,
+        #f7c97b,
+        #f7d281
+    );
+    z-index: 999;
+    user-select: none;
+    touch-action: none;
+}
 
-    #car-img {
-        position: absolute;
-        top: 391.27px;
-        left: 125.95px;
-        width: 207px;
-        z-index: 10;
-        opacity: 0.7;
-    }
+#name-img {
+    position: absolute;
+    top: 154.41px;
+    left: 153.56px;
+    width: 198px;
+    z-index: 10;
+}
 
-    #rest-img {
-        position: absolute;
-        top: 619.71px;
-        left: 6.70px;
-        width: 381px;
-        z-index: 10;
-    }
+#car-img {
+    position: absolute;
+    top: 391.27px;
+    left: 125.95px;
+    width: 207px;
+    z-index: 10;
+    opacity: 0.7;
+}
 
-    /* Pulse logo */
-    #pulse-logo {
-        position: fixed;
-        top: calc(242.52px + env(safe-area-inset-top));
-        left: 25%;
-        transform: translateX(-50%);
-        width: 200px;
-        filter: brightness(0) invert(80%) sepia(0) saturate(0);
-        z-index: 5;
-        animation: pulse-animation 1.6s infinite ease-in-out;
-    }
+#rest-img {
+    position: absolute;
+    top: 619.71px;
+    left: 6.70px;
+    width: 381px;
+    z-index: 10;
+}
 
-    /* Header image */
-    #header-img {
-        position: fixed;
-        top: env(safe-area-inset-top);
-        left: 50%;
-        transform: translateX(-50%);
-        width: 390px;
-        max-width: 100%;
-        z-index: 1000;
-        pointer-events: none;
-    }
+#pulse-logo {
+    position: fixed;
+    top: calc(242.52px + env(safe-area-inset-top));
+    left: 25%;
+    transform: translateX(-50%);
+    width: 200px;
+    filter: brightness(0) invert(80%) sepia(0) saturate(0);
+    z-index: 5;
+    animation: pulse-animation 1.6s infinite ease-in-out;
+}
 
-    /* Bottom image */
-    #bottom-img {
-        position: fixed;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 390px;
-        max-width: 100%;
-        z-index: 10;
-    }
+#header-img {
+    position: fixed;
+    top: env(safe-area-inset-top);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 390px;
+    max-width: 100%;
+    z-index: 1000;
+    pointer-events: none;
+}
 
-    /* QR button */
-    #qr-nav-btn {
-        position: fixed;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 35px;
-        width: 80px;
-        height: auto;
-        cursor: pointer;
-        z-index: 200;
-        transition: opacity 0.2s;
-    }
+#bottom-img {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 390px;
+    max-width: 100%;
+    z-index: 10;
+}
 
-    #qr-nav-btn:hover,
-    #qr-close-btn:hover {
-        opacity: 0.9;
-    }
+#qr-nav-btn {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 35px;
+    width: 80px;
+    height: auto;
+    cursor: grab;
+    z-index: 200;
+    transition: opacity 0.2s;
+    touch-action: none;
+}
 
-    /* QR close button */
-    #qr-close-btn {
-        position: fixed;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 38px;
-        width: 75px;
-        height: auto;
-        cursor: pointer;
-        z-index: 2001;
-        transition: opacity 0.2s;
-    }
+#qr-close-btn {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 38px;
+    width: 75px;
+    height: auto;
+    cursor: grab;
+    z-index: 2001;
+    transition: opacity 0.2s;
+    touch-action: none;
+}
 
-    @keyframes pulse-animation {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-    }
+@keyframes pulse-animation {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
 
-    /* QR popup */
-    #qr-popup-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: #fff;
-        z-index: 2000;
-        overflow: hidden;
-        justify-content: center;
-        align-items: center;
-    }
+#qr-popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #fff;
+    z-index: 2000;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+}
 
-    #qr-popup-overlay.active {
-        display: flex;
-    }
+#qr-popup-overlay.active {
+    display: flex;
+}
 
-    #qr-popup-container {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+#qr-popup-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-    #qr-popup-bg {
-        max-width: 100vw;
-        max-height: 100vh;
-        width: auto;
-        height: auto;
-        object-fit: contain;
-        display: block;
-        pointer-events: none;
-        image-rendering: -webkit-optimize-contrast;
-        image-rendering: crisp-edges;
-    }
+#qr-popup-bg {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
 
-    /* =========================================
-       LAYOUT EDITOR CONTROLS
-       ========================================= */
+/* Editor panel */
 
-    #editor-panel {
-        position: fixed;
-        top: calc(65px + env(safe-area-inset-top));
-        right: 10px;
-        z-index: 10000;
-        width: min(280px, calc(100vw - 20px));
-        padding: 12px;
-        background: rgba(25, 25, 25, 0.96);
-        color: white;
-        border-radius: 10px;
-        box-shadow: 0 3px 15px rgba(0,0,0,0.3);
-        font-family: Arial, sans-serif;
-        font-size: 13px;
-    }
+#editor-panel {
+    position: fixed;
+    top: calc(65px + env(safe-area-inset-top));
+    right: 10px;
+    z-index: 10000;
+    width: min(280px, calc(100vw - 20px));
+    max-height: calc(100vh - 90px);
+    overflow-y: auto;
+    padding: 12px;
+    background: rgba(25, 25, 25, 0.97);
+    color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.3);
+    font-size: 13px;
+}
 
-    #editor-panel h3 {
-        margin: 0 0 10px;
-        font-size: 15px;
-    }
+#editor-panel h3 {
+    margin: 0 0 10px;
+    font-size: 15px;
+}
 
-    #editor-panel button,
-    #editor-panel select {
-        width: 100%;
-        margin: 4px 0;
-        padding: 9px;
-        border: 0;
-        border-radius: 5px;
-        font-size: 13px;
-    }
+#editor-panel button,
+#editor-panel select {
+    width: 100%;
+    margin: 4px 0;
+    padding: 9px;
+    border: 0;
+    border-radius: 5px;
+    font-size: 13px;
+}
 
-    #editor-panel button {
-        cursor: pointer;
-        background: #f1b765;
-        color: #222;
-        font-weight: bold;
-    }
+#editor-panel button {
+    cursor: pointer;
+    background: #f1b765;
+    color: #222;
+    font-weight: bold;
+}
 
-    #editor-panel button.secondary {
-        background: #e5e5e5;
-    }
+#editor-panel button.secondary {
+    background: #e5e5e5;
+}
 
-    #editor-panel .editor-status {
-        margin-top: 7px;
-        color: #ddd;
-        font-size: 11px;
-        line-height: 1.4;
-    }
+.editor-status {
+    margin-top: 7px;
+    color: #ddd;
+    font-size: 11px;
+    line-height: 1.4;
+}
 
-    #coordinate-output {
-        display: none;
-        width: 100%;
-        height: 180px;
-        margin-top: 8px;
-        padding: 8px;
-        resize: vertical;
-        font-family: monospace;
-        font-size: 11px;
-        white-space: pre;
-    }
+#coordinate-output {
+    display: none;
+    width: 100%;
+    height: 180px;
+    margin-top: 8px;
+    padding: 8px;
+    resize: vertical;
+    font-family: monospace;
+    font-size: 11px;
+}
 
-    /* Highlight the element currently being dragged. */
-    .drag-selected {
-        outline: 2px dashed #ff7800 !important;
-        outline-offset: 2px;
-    }
+#editor-toggle {
+    position: fixed;
+    right: 10px;
+    top: calc(10px + env(safe-area-inset-top));
+    z-index: 10001;
+    padding: 9px 12px;
+    background: #222;
+    color: #fff;
+    border: 1px solid #777;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+}
 
-    /* The editor's show/hide handle */
-    #editor-toggle {
-        position: fixed;
-        right: 10px;
-        top: calc(10px + env(safe-area-inset-top));
-        z-index: 10001;
-        padding: 9px 12px;
-        background: #222;
-        color: white;
-        border: 1px solid #777;
-        border-radius: 6px;
-        font-size: 12px;
-        cursor: pointer;
-    }
+.drag-selected {
+    outline: 2px dashed #ff7800 !important;
+    outline-offset: 2px;
+}
 
-    body.editor-hidden #editor-panel {
-        display: none;
-    }
+body.editor-hidden #editor-panel {
+    display: none;
+}
 
-    /* When editing is disabled, elements no longer show drag cursors. */
-    body.layout-locked .draggable-element {
-        cursor: default !important;
-    }
+body.layout-locked .draggable-element {
+    cursor: default !important;
+}
 </style>
 </head>
 
@@ -343,7 +331,7 @@
 <div id="yellow-block" class="draggable-element" data-drag-name="Yellow header background"></div>
 
 <div class="container" id="main-container">
-    <img src="./background.png" class="bg-image" id="bg-img" alt="Background">
+    <img src="./background.png" class="bg-image" id="bg-img" alt="Background" draggable="false">
 
     <div id="white-block" class="draggable-element" data-drag-name="White block"></div>
 
@@ -353,36 +341,35 @@
         <span id="clock-text"></span>
     </div>
 
-    <img src="./name.png" id="name-img" class="draggable-element" data-drag-name="Name image" alt="Name Overlay">
+    <img src="./name.png" id="name-img" class="draggable-element" data-drag-name="Name image" alt="Name Overlay" draggable="false">
 
-    <img src="./car.png" id="car-img" class="draggable-element" data-drag-name="Car image" alt="Car Overlay">
+    <img src="./car.png" id="car-img" class="draggable-element" data-drag-name="Car image" alt="Car Overlay" draggable="false">
 
-    <img src="./rest.png" id="rest-img" class="draggable-element" data-drag-name="Rest image" alt="Rest Overlay">
+    <img src="./rest.png" id="rest-img" class="draggable-element" data-drag-name="Rest image" alt="Rest Overlay" draggable="false">
 </div>
 
-<img src="./button.png" id="qr-nav-btn" class="draggable-element" data-drag-name="QR navigation button" alt="QR Code Button">
+<img src="./button.png" id="qr-nav-btn" class="draggable-element" data-drag-name="QR navigation button" alt="QR Code Button" draggable="false">
 
-<img src="./bottom.png" id="bottom-img" class="draggable-element" data-drag-name="Bottom image" alt="Bottom">
+<img src="./bottom.png" id="bottom-img" class="draggable-element" data-drag-name="Bottom image" alt="Bottom" draggable="false">
 
-<img src="./pulse-logo.png" id="pulse-logo" class="draggable-element" data-drag-name="Pulse logo" alt="Pulsing Logo">
+<img src="./pulse-logo.png" id="pulse-logo" class="draggable-element" data-drag-name="Pulse logo" alt="Pulsing Logo" draggable="false">
 
-<img src="./header.png" id="header-img" alt="Header">
+<img src="./header.png" id="header-img" alt="Header" draggable="false">
 
 <div id="qr-popup-overlay">
     <div id="qr-popup-container">
-        <img src="./qrback.png" id="qr-popup-bg" alt="QR Background">
+        <img src="./qrback.png" id="qr-popup-bg" alt="QR Background" draggable="false">
     </div>
 
-    <img src="./button.png" id="qr-close-btn" class="draggable-element" data-drag-name="QR popup close button" alt="Back Button">
+    <img src="./button.png" id="qr-close-btn" class="draggable-element" data-drag-name="QR popup close button" alt="Back Button" draggable="false">
 </div>
 
-<!-- Editor controls -->
 <button id="editor-toggle" type="button">Hide Editor</button>
 
 <div id="editor-panel">
     <h3>Layout Position Editor</h3>
 
-    <label for="element-select">Select an element:</label>
+    <label for="element-select">Element to move:</label>
 
     <select id="element-select">
         <option value="all">All draggable elements</option>
@@ -407,162 +394,92 @@
     <textarea id="coordinate-output" readonly></textarea>
 
     <div class="editor-status" id="editor-status">
-        Drag any element to move it. Positions save automatically in this browser.
+        Drag elements using your mouse or finger. Positions save automatically.
     </div>
 </div>
 
 <script>
 "use strict";
 
-/* =========================================
-   QR POPUP
-   ========================================= */
-
-const qrBtn = document.getElementById("qr-nav-btn");
-const qrOverlay = document.getElementById("qr-popup-overlay");
-const qrCloseBtn = document.getElementById("qr-close-btn");
-
-let dragging = false;
-let dragEnabled = true;
-
-qrBtn.addEventListener("click", function () {
-    if (dragging || !dragEnabled) {
-        if (!dragEnabled) openQrPopup();
-        return;
+/* Disable native browser image dragging everywhere. */
+document.addEventListener("dragstart", function(event) {
+    if (event.target instanceof HTMLImageElement) {
+        event.preventDefault();
     }
-
-    openQrPopup();
 });
 
-function openQrPopup() {
-    qrOverlay.classList.add("active");
-    document.body.style.overflow = "hidden";
-}
+const STORAGE_KEY = "static-ui-layout-positions-v2";
 
-function closeQrPopup() {
-    qrOverlay.classList.remove("active");
-    document.body.style.overflow = "";
-}
-
-qrCloseBtn.addEventListener("click", function () {
-    if (!dragEnabled) closeQrPopup();
-});
-
-/* =========================================
-   ELEMENTS AND POSITION STORAGE
-   ========================================= */
-
-const STORAGE_KEY = "static-ui-layout-positions-v1";
+const mainContainer = document.getElementById("main-container");
+const clockEl = document.getElementById("clock");
+const clockBgEl = document.getElementById("clock-bg");
+const qrOverlay = document.getElementById("qr-popup-overlay");
 
 const draggableElements = Array.from(
     document.querySelectorAll(".draggable-element")
 );
 
-const mainContainer = document.getElementById("main-container");
-const clockEl = document.getElementById("clock");
-const clockBgEl = document.getElementById("clock-bg");
-
-const originalPositions = {};
-const activeDrags = new Map();
-
+const originalStyles = {};
+let dragEnabled = true;
+let activeDrag = null;
 let selectedElementId = "all";
+let movedDuringInteraction = false;
+let suppressClickUntil = 0;
 
-function getElementPosition(element) {
-    const rect = element.getBoundingClientRect();
+/* Store original styles for the reset button. */
+draggableElements.forEach(function(element) {
+    originalStyles[element.id] = element.getAttribute("style");
+});
 
-    return {
-        x: Math.round(rect.left * 100) / 100,
-        y: Math.round(rect.top * 100) / 100,
-        width: Math.round(rect.width * 100) / 100,
-        height: Math.round(rect.height * 100) / 100,
-        position: getComputedStyle(element).position
-    };
-}
-
-function saveOriginalPositions() {
-    draggableElements.forEach(function (element) {
-        originalPositions[element.id] = {
-            style: element.getAttribute("style"),
-            className: element.className
-        };
-    });
-}
-
-function savePositions() {
-    const positions = {};
-
-    draggableElements.forEach(function (element) {
-        positions[element.id] = {
-            style: element.getAttribute("style")
-        };
-    });
-
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(positions));
-        setStatus("Positions saved in this browser.");
-    } catch (error) {
-        setStatus("Could not save positions. Check browser storage settings.");
-    }
-}
-
+/* Restore saved positions. */
 function loadPositions() {
     try {
-        const saved = localStorage.getItem(STORAGE_KEY);
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 
-        if (!saved) return;
-
-        const positions = JSON.parse(saved);
-
-        draggableElements.forEach(function (element) {
-            const savedPosition = positions[element.id];
-
-            if (savedPosition && typeof savedPosition.style === "string") {
-                element.setAttribute("style", savedPosition.style);
+        draggableElements.forEach(function(element) {
+            if (saved[element.id]) {
+                element.setAttribute("style", saved[element.id]);
             }
         });
     } catch (error) {
-        console.error("Unable to load saved layout:", error);
+        console.error("Could not load saved positions:", error);
     }
 }
 
-/* =========================================
-   CONVERT ELEMENTS TO DRAGGABLE POSITIONS
-   ========================================= */
+function savePositions() {
+    const saved = {};
 
-function prepareForDragging(element) {
+    draggableElements.forEach(function(element) {
+        saved[element.id] = element.getAttribute("style") || "";
+    });
+
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+        setStatus("Positions saved automatically.");
+    } catch (error) {
+        setStatus("Unable to save positions in this browser.");
+    }
+}
+
+/*
+ * Convert the selected element to explicit coordinates before dragging.
+ * Container children use coordinates relative to the main container.
+ * Fixed elements use viewport coordinates.
+ */
+function prepareElement(element) {
     const rect = element.getBoundingClientRect();
+    const style = getComputedStyle(element);
 
-    if (element.dataset.dragPrepared === "true") return;
+    if (element.parentElement === mainContainer) {
+        const parentRect = mainContainer.getBoundingClientRect();
 
-    element.dataset.dragPrepared = "true";
-
-    const computed = getComputedStyle(element);
-
-    if (computed.position === "fixed") {
-        /*
-         * Fixed elements use coordinates relative to the viewport.
-         * Remove centering transforms and convert to explicit left/top.
-         */
+        element.style.position = "absolute";
+        element.style.left = (rect.left - parentRect.left) + "px";
+        element.style.top = (rect.top - parentRect.top) + "px";
+        element.style.right = "auto";
+        element.style.bottom = "auto";
         element.style.transform = "none";
-        element.style.left = rect.left + "px";
-        element.style.top = rect.top + "px";
-        element.style.right = "auto";
-        element.style.bottom = "auto";
-    } else if (element.parentElement === mainContainer) {
-        /*
-         * Elements inside the main container use container-relative
-         * coordinates. This keeps the background layout intact.
-         */
-        const containerRect = mainContainer.getBoundingClientRect();
-
-        element.style.left = (rect.left - containerRect.left) + "px";
-        element.style.top = (rect.top - containerRect.top) + "px";
-        element.style.right = "auto";
-        element.style.bottom = "auto";
     } else {
-        /*
-         * Other positioned elements use viewport-relative coordinates.
-         */
         element.style.position = "fixed";
         element.style.left = rect.left + "px";
         element.style.top = rect.top + "px";
@@ -570,28 +487,174 @@ function prepareForDragging(element) {
         element.style.bottom = "auto";
         element.style.transform = "none";
     }
+
+    /* Keep the pulse logo still while it is being positioned. */
+    if (element.id === "pulse-logo") {
+        element.style.animation = "none";
+    }
 }
 
-function getDragCoordinates(element, clientX, clientY, offsetX, offsetY) {
-    const newX = clientX - offsetX;
-    const newY = clientY - offsetY;
-
-    if (element.parentElement === mainContainer) {
-        const containerRect = mainContainer.getBoundingClientRect();
-
-        return {
-            x: newX - containerRect.left,
-            y: newY - containerRect.top
-        };
-    }
-
+function getPointerPosition(event) {
     return {
-        x: newX,
-        y: newY
+        x: event.clientX,
+        y: event.clientY
     };
 }
 
+function startDrag(event) {
+    if (!dragEnabled || event.button !== 0) return;
+
+    const element = event.currentTarget;
+
+    if (selectedElementId !== "all" && element.id !== selectedElementId) {
+        return;
+    }
+
+    if (element.id === "qr-close-btn" &&
+        !qrOverlay.classList.contains("active")) {
+        return;
+    }
+
+    if (event.target.closest("#editor-panel")) return;
+
+    event.preventDefault();
+
+    prepareElement(element);
+
+    const rect = element.getBoundingClientRect();
+    const pointer = getPointerPosition(event);
+
+    activeDrag = {
+        element: element,
+        pointerId: event.pointerId,
+        offsetX: pointer.x - rect.left,
+        offsetY: pointer.y - rect.top,
+        startX: pointer.x,
+        startY: pointer.y,
+        initialLeft: parseFloat(element.style.left) || 0,
+        initialTop: parseFloat(element.style.top) || 0
+    };
+
+    movedDuringInteraction = false;
+
+    element.classList.add("drag-selected");
+
+    try {
+        element.setPointerCapture(event.pointerId);
+    } catch (error) {
+        /* Document-level pointer listeners remain available as fallback. */
+    }
+
+    document.addEventListener("pointermove", moveDrag, { passive: false });
+    document.addEventListener("pointerup", endDrag);
+    document.addEventListener("pointercancel", endDrag);
+
+    setStatus("Dragging: " + (element.dataset.dragName || element.id));
+}
+
+function moveDrag(event) {
+    if (!activeDrag) return;
+    if (event.pointerId !== activeDrag.pointerId) return;
+
+    event.preventDefault();
+
+    const drag = activeDrag;
+    const element = drag.element;
+
+    const distanceX = event.clientX - drag.startX;
+    const distanceY = event.clientY - drag.startY;
+
+    if (Math.abs(distanceX) > 2 || Math.abs(distanceY) > 2) {
+        movedDuringInteraction = true;
+    }
+
+    let left = event.clientX - drag.offsetX;
+    let top = event.clientY - drag.offsetY;
+
+    if (element.parentElement === mainContainer) {
+        const parentRect = mainContainer.getBoundingClientRect();
+        left -= parentRect.left;
+        top -= parentRect.top;
+    }
+
+    element.style.left = left + "px";
+    element.style.top = top + "px";
+    element.style.right = "auto";
+    element.style.bottom = "auto";
+
+    if (element.id === "clock") {
+        syncClockBg();
+    }
+}
+
+function endDrag(event) {
+    if (!activeDrag) return;
+
+    if (
+        event &&
+        event.pointerId !== undefined &&
+        event.pointerId !== activeDrag.pointerId
+    ) {
+        return;
+    }
+
+    const element = activeDrag.element;
+
+    element.classList.remove("drag-selected");
+
+    if (movedDuringInteraction) {
+        suppressClickUntil = Date.now() + 350;
+        savePositions();
+    }
+
+    activeDrag = null;
+
+    document.removeEventListener("pointermove", moveDrag);
+    document.removeEventListener("pointerup", endDrag);
+    document.removeEventListener("pointercancel", endDrag);
+
+    syncClockBg();
+
+    setStatus(
+        movedDuringInteraction
+            ? "Position saved. You can move another element."
+            : "Ready. Drag an element to move it."
+    );
+}
+
+/* Make the elements draggable. */
+draggableElements.forEach(function(element) {
+    element.style.touchAction = "none";
+    element.style.userSelect = "none";
+    element.style.webkitUserSelect = "none";
+    element.addEventListener("pointerdown", startDrag);
+});
+
+/* Keep the QR button working after dragging is locked. */
+document.getElementById("qr-nav-btn").addEventListener("click", function(event) {
+    if (Date.now() < suppressClickUntil) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+    }
+
+    if (!dragEnabled) {
+        qrOverlay.classList.add("active");
+        document.body.style.overflow = "hidden";
+    }
+});
+
+document.getElementById("qr-close-btn").addEventListener("click", function() {
+    if (!dragEnabled && Date.now() >= suppressClickUntil) {
+        qrOverlay.classList.remove("active");
+        document.body.style.overflow = "";
+    }
+});
+
+/* Clock */
 function syncClockBg() {
+    if (!clockEl || !clockBgEl || !mainContainer) return;
+
     const clockRect = clockEl.getBoundingClientRect();
     const containerRect = mainContainer.getBoundingClientRect();
 
@@ -600,169 +663,6 @@ function syncClockBg() {
     clockBgEl.style.width = clockRect.width + "px";
     clockBgEl.style.height = clockRect.height + "px";
 }
-
-/* =========================================
-   DRAG HANDLERS
-   ========================================= */
-
-function startDrag(element, event) {
-    if (!dragEnabled) return;
-
-    if (event.type === "mousedown" && event.button !== 0) return;
-
-    /*
-     * Do not begin a drag when the QR popup is closed and the user
-     * clicks the navigation button with editing disabled.
-     */
-    if (
-        element.id === "qr-close-btn" &&
-        !qrOverlay.classList.contains("active")
-    ) {
-        return;
-    }
-
-    if (
-        element.id === "qr-nav-btn" &&
-        !qrOverlay.classList.contains("active") &&
-        !dragEnabled
-    ) {
-        return;
-    }
-
-    if (event.cancelable) event.preventDefault();
-
-    dragging = true;
-
-    prepareForDragging(element);
-
-    const rect = element.getBoundingClientRect();
-
-    const clientX = event.clientX !== undefined
-        ? event.clientX
-        : event.touches[0].clientX;
-
-    const clientY = event.clientY !== undefined
-        ? event.clientY
-        : event.touches[0].clientY;
-
-    activeDrags.set(element.id, {
-        element: element,
-        offsetX: clientX - rect.left,
-        offsetY: clientY - rect.top
-    });
-
-    element.classList.add("drag-selected");
-
-    document.addEventListener("mousemove", onMouseMove);
-    document.addEventListener("mouseup", onMouseUp);
-    document.addEventListener("touchmove", onTouchMove, { passive: false });
-    document.addEventListener("touchend", onTouchEnd);
-    document.addEventListener("touchcancel", onTouchEnd);
-
-    setStatus("Moving: " + (element.dataset.dragName || element.id));
-}
-
-function moveElement(element, clientX, clientY, offsetX, offsetY) {
-    const coords = getDragCoordinates(
-        element,
-        clientX,
-        clientY,
-        offsetX,
-        offsetY
-    );
-
-    element.style.right = "auto";
-    element.style.bottom = "auto";
-    element.style.left = coords.x + "px";
-    element.style.top = coords.y + "px";
-
-    if (element.id === "clock") {
-        syncClockBg();
-    }
-}
-
-function onMouseMove(event) {
-    if (!dragging) return;
-
-    activeDrags.forEach(function (drag) {
-        moveElement(
-            drag.element,
-            event.clientX,
-            event.clientY,
-            drag.offsetX,
-            drag.offsetY
-        );
-    });
-}
-
-function onTouchMove(event) {
-    if (!dragging || !event.touches.length) return;
-
-    if (event.cancelable) event.preventDefault();
-
-    const touch = event.touches[0];
-
-    activeDrags.forEach(function (drag) {
-        moveElement(
-            drag.element,
-            touch.clientX,
-            touch.clientY,
-            drag.offsetX,
-            drag.offsetY
-        );
-    });
-}
-
-function stopDragging() {
-    if (!dragging) return;
-
-    activeDrags.forEach(function (drag) {
-        drag.element.classList.remove("drag-selected");
-    });
-
-    activeDrags.clear();
-    dragging = false;
-
-    document.removeEventListener("mousemove", onMouseMove);
-    document.removeEventListener("mouseup", onMouseUp);
-    document.removeEventListener("touchmove", onTouchMove);
-    document.removeEventListener("touchend", onTouchEnd);
-    document.removeEventListener("touchcancel", onTouchEnd);
-
-    syncClockBg();
-    savePositions();
-}
-
-function onMouseUp() {
-    stopDragging();
-}
-
-function onTouchEnd() {
-    stopDragging();
-}
-
-/* =========================================
-   INITIALISE DRAGGING
-   ========================================= */
-
-saveOriginalPositions();
-loadPositions();
-
-draggableElements.forEach(function (element) {
-    element.addEventListener("mousedown", function (event) {
-        if (event.target.closest("#editor-panel")) return;
-        startDrag(element, event);
-    });
-
-    element.addEventListener("touchstart", function (event) {
-        if (event.target.closest("#editor-panel")) return;
-        startDrag(element, event);
-    }, { passive: false });
-});
-
-/* =========================================
-   LIVE CLOCK
-   ========================================= */
 
 function updateClock() {
     const now = new Date();
@@ -774,12 +674,10 @@ function updateClock() {
 
     const minutes = String(now.getMinutes()).padStart(2, "0");
 
-    const timeString =
+    document.getElementById("clock-text").textContent =
         `${now.getDate()} ` +
         `${now.toLocaleString("default", { month: "short" })} ` +
         `${now.getFullYear()} ${hours}:${minutes}${ampm}`;
-
-    document.getElementById("clock-text").textContent = timeString;
 
     syncClockBg();
 }
@@ -787,10 +685,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-/* =========================================
-   EDITOR CONTROLS
-   ========================================= */
-
+/* Editor controls */
 const editorPanel = document.getElementById("editor-panel");
 const editorToggle = document.getElementById("editor-toggle");
 const editorStatus = document.getElementById("editor-status");
@@ -801,26 +696,20 @@ function setStatus(message) {
     editorStatus.textContent = message;
 }
 
-function getSelectedElements() {
-    if (selectedElementId === "all") {
-        return draggableElements;
-    }
+function selectedElements() {
+    if (selectedElementId === "all") return draggableElements;
 
     const element = document.getElementById(selectedElementId);
-
     return element ? [element] : [];
 }
 
-elementSelect.addEventListener("change", function () {
-    selectedElementId = elementSelect.value;
+elementSelect.addEventListener("change", function() {
+    selectedElementId = this.value;
 
-    draggableElements.forEach(function (element) {
+    draggableElements.forEach(function(element) {
         element.style.outline = "";
 
-        if (
-            selectedElementId !== "all" &&
-            element.id === selectedElementId
-        ) {
+        if (selectedElementId !== "all" && element.id === selectedElementId) {
             element.style.outline = "2px dashed #ff7800";
         }
     });
@@ -828,11 +717,11 @@ elementSelect.addEventListener("change", function () {
     setStatus(
         selectedElementId === "all"
             ? "All elements can be moved."
-            : "Selected: " + selectedElementId
+            : "Selected element: " + selectedElementId
     );
 });
 
-document.getElementById("toggle-drag").addEventListener("click", function () {
+document.getElementById("toggle-drag").addEventListener("click", function() {
     dragEnabled = !dragEnabled;
 
     document.body.classList.toggle("layout-locked", !dragEnabled);
@@ -841,37 +730,41 @@ document.getElementById("toggle-drag").addEventListener("click", function () {
 
     setStatus(
         dragEnabled
-            ? "Dragging enabled. Move elements with your mouse or finger."
-            : "Dragging locked. QR buttons can now be used normally."
+            ? "Dragging enabled."
+            : "Dragging locked. QR buttons are now usable."
     );
 });
 
-document.getElementById("show-coordinates").addEventListener("click", function () {
-    const selected = getSelectedElements();
+function getCoordinates(element) {
+    const rect = element.getBoundingClientRect();
 
-    const output = selected.map(function (element) {
-        const pos = getElementPosition(element);
+    return {
+        id: element.id,
+        name: element.dataset.dragName || element.id,
+        x: Math.round(rect.left * 100) / 100,
+        y: Math.round(rect.top * 100) / 100,
+        width: Math.round(rect.width * 100) / 100,
+        height: Math.round(rect.height * 100) / 100,
+        coordinateSystem:
+            element.parentElement === mainContainer
+                ? "main-container"
+                : "viewport"
+    };
+}
 
-        return {
-            id: element.id,
-            name: element.dataset.dragName || element.id,
-            x: pos.x,
-            y: pos.y,
-            width: pos.width,
-            height: pos.height,
-            position: pos.position
-        };
-    });
+document.getElementById("show-coordinates").addEventListener("click", function() {
+    coordinateOutput.value = JSON.stringify(
+        selectedElements().map(getCoordinates),
+        null,
+        2
+    );
 
     coordinateOutput.style.display = "block";
-    coordinateOutput.value = JSON.stringify(output, null, 2);
 
-    setStatus(
-        "Coordinates displayed. X and Y are measured from the top-left of the browser viewport."
-    );
+    setStatus("Coordinates shown. X and Y are measured from the viewport's top-left.");
 });
 
-document.getElementById("copy-coordinates").addEventListener("click", async function () {
+document.getElementById("copy-coordinates").addEventListener("click", async function() {
     if (!coordinateOutput.value.trim()) {
         document.getElementById("show-coordinates").click();
     }
@@ -882,45 +775,31 @@ document.getElementById("copy-coordinates").addEventListener("click", async func
     } catch (error) {
         coordinateOutput.focus();
         coordinateOutput.select();
-
-        try {
-            document.execCommand("copy");
-            setStatus("Coordinates copied. Paste them into your message.");
-        } catch (copyError) {
-            setStatus("Select the coordinates text and copy it manually.");
-        }
+        setStatus("Coordinates selected. Press Cmd+C to copy them.");
     }
 });
 
-document.getElementById("reset-positions").addEventListener("click", function () {
-    const confirmed = confirm(
-        "Reset all elements to their original positions?"
-    );
+document.getElementById("reset-positions").addEventListener("click", function() {
+    if (!confirm("Reset every element to its original position?")) return;
 
-    if (!confirmed) return;
+    draggableElements.forEach(function(element) {
+        const original = originalStyles[element.id];
 
-    draggableElements.forEach(function (element) {
-        const original = originalPositions[element.id];
-
-        if (original) {
-            if (original.style === null) {
-                element.removeAttribute("style");
-            } else {
-                element.setAttribute("style", original.style);
-            }
+        if (original === null) {
+            element.removeAttribute("style");
+        } else {
+            element.setAttribute("style", original);
         }
-
-        element.dataset.dragPrepared = "false";
     });
 
     localStorage.removeItem(STORAGE_KEY);
 
-    syncClockBg();
-
     coordinateOutput.value = "";
     coordinateOutput.style.display = "none";
 
-    setStatus("Positions reset to the original layout.");
+    syncClockBg();
+
+    setStatus("All positions reset.");
 });
 
 function hideEditor() {
@@ -935,7 +814,7 @@ function showEditor() {
 
 document.getElementById("hide-editor").addEventListener("click", hideEditor);
 
-editorToggle.addEventListener("click", function () {
+editorToggle.addEventListener("click", function() {
     if (document.body.classList.contains("editor-hidden")) {
         showEditor();
     } else {
@@ -943,15 +822,11 @@ editorToggle.addEventListener("click", function () {
     }
 });
 
-/* Keep the clock's background aligned when the viewport changes. */
-window.addEventListener("resize", function () {
-    syncClockBg();
-});
+window.addEventListener("resize", syncClockBg);
 
-/* Save initial state only after the page is ready. */
-window.addEventListener("load", function () {
-    syncClockBg();
-});
+/* Load saved positions before the user starts interacting. */
+loadPositions();
+syncClockBg();
 </script>
 
 </body>
