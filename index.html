@@ -15,6 +15,7 @@
 
 html, body {
     width: 100%;
+    min-height: 100%;
     margin: 0;
     padding: 0;
     background: #fff;
@@ -58,8 +59,6 @@ img {
     background: transparent;
     padding: 1px 4px;
     border-radius: 2px;
-    cursor: grab;
-    touch-action: none;
     white-space: nowrap;
 }
 
@@ -81,8 +80,6 @@ img {
     height: 100px;
     background: #fff;
     z-index: 9;
-    cursor: grab;
-    touch-action: none;
     user-select: none;
 }
 
@@ -105,7 +102,6 @@ img {
     );
     z-index: 999;
     user-select: none;
-    touch-action: none;
 }
 
 #name-img {
@@ -172,10 +168,8 @@ img {
     bottom: 35px;
     width: 80px;
     height: auto;
-    cursor: grab;
     z-index: 200;
     transition: opacity 0.2s;
-    touch-action: none;
 }
 
 #qr-close-btn {
@@ -185,10 +179,8 @@ img {
     bottom: 38px;
     width: 75px;
     height: auto;
-    cursor: grab;
     z-index: 2001;
     transition: opacity 0.2s;
-    touch-action: none;
 }
 
 @keyframes pulse-animation {
@@ -235,6 +227,56 @@ img {
     image-rendering: crisp-edges;
 }
 
+/* Selected-element drag mode */
+
+#drag-surface {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    cursor: move;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    background: transparent;
+}
+
+body.drag-mode #drag-surface {
+    display: block;
+}
+
+body.drag-mode #editor-panel,
+body.drag-mode #editor-toggle {
+    z-index: 10002;
+}
+
+#drag-instructions {
+    display: none;
+    position: fixed;
+    left: 50%;
+    bottom: 15px;
+    transform: translateX(-50%);
+    z-index: 10001;
+    width: min(340px, calc(100vw - 24px));
+    padding: 11px 14px;
+    background: rgba(20, 20, 20, 0.94);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: center;
+    pointer-events: none;
+}
+
+body.drag-mode #drag-instructions {
+    display: block;
+}
+
+.drag-selected {
+    outline: 2px dashed #ff7800 !important;
+    outline-offset: 2px;
+}
+
 /* Editor panel */
 
 #editor-panel {
@@ -279,11 +321,16 @@ img {
     background: #e5e5e5;
 }
 
+#editor-panel button.active-button {
+    background: #ff7800;
+    color: #fff;
+}
+
 .editor-status {
     margin-top: 7px;
     color: #ddd;
     font-size: 11px;
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 #coordinate-output {
@@ -311,17 +358,16 @@ img {
     cursor: pointer;
 }
 
-.drag-selected {
-    outline: 2px dashed #ff7800 !important;
-    outline-offset: 2px;
-}
-
 body.editor-hidden #editor-panel {
     display: none;
 }
 
-body.layout-locked .draggable-element {
-    cursor: default !important;
+body.layout-locked #drag-surface {
+    display: none !important;
+}
+
+body.layout-locked #drag-instructions {
+    display: none !important;
 }
 </style>
 </head>
@@ -364,6 +410,14 @@ body.layout-locked .draggable-element {
     <img src="./button.png" id="qr-close-btn" class="draggable-element" data-drag-name="QR popup close button" alt="Back Button" draggable="false">
 </div>
 
+<!-- This transparent surface lets you move selected elements even when overlapped. -->
+<div id="drag-surface" aria-label="Drag selected element"></div>
+
+<div id="drag-instructions">
+    Drag anywhere on the screen to move the selected element.
+    Press <strong>Escape</strong> to exit drag mode.
+</div>
+
 <button id="editor-toggle" type="button">Hide Editor</button>
 
 <div id="editor-panel">
@@ -372,7 +426,7 @@ body.layout-locked .draggable-element {
     <label for="element-select">Element to move:</label>
 
     <select id="element-select">
-        <option value="all">All draggable elements</option>
+        <option value="all">All elements (choose one below)</option>
         <option value="yellow-block">Yellow header background</option>
         <option value="white-block">White block</option>
         <option value="clock">Clock</option>
@@ -385,66 +439,62 @@ body.layout-locked .draggable-element {
         <option value="qr-close-btn">QR popup close button</option>
     </select>
 
-    <button id="toggle-drag" type="button">Lock Dragging</button>
+    <button id="move-selected" type="button">Move Selected Element</button>
+    <button id="toggle-drag" type="button" class="secondary">Lock Editing</button>
     <button id="show-coordinates" type="button">Show Coordinates</button>
     <button id="copy-coordinates" type="button">Copy Coordinates</button>
-    <button id="reset-positions" class="secondary" type="button">Reset Positions</button>
-    <button id="hide-editor" class="secondary" type="button">Hide Editor Panel</button>
+    <button id="reset-positions" type="button" class="secondary">Reset Positions</button>
+    <button id="hide-editor" type="button" class="secondary">Hide Editor Panel</button>
 
     <textarea id="coordinate-output" readonly></textarea>
 
     <div class="editor-status" id="editor-status">
-        Drag elements using your mouse or finger. Positions save automatically.
+        Select an element, then click "Move Selected Element". Drag anywhere on the page to move it. Positions save automatically.
     </div>
 </div>
 
 <script>
 "use strict";
 
-/* Disable native browser image dragging everywhere. */
 document.addEventListener("dragstart", function(event) {
     if (event.target instanceof HTMLImageElement) {
         event.preventDefault();
     }
 });
 
-const STORAGE_KEY = "static-ui-layout-positions-v2";
+const STORAGE_KEY = "static-ui-layout-positions-v3";
 
 const mainContainer = document.getElementById("main-container");
 const clockEl = document.getElementById("clock");
 const clockBgEl = document.getElementById("clock-bg");
 const qrOverlay = document.getElementById("qr-popup-overlay");
+const dragSurface = document.getElementById("drag-surface");
+const editorPanel = document.getElementById("editor-panel");
+const editorToggle = document.getElementById("editor-toggle");
+const editorStatus = document.getElementById("editor-status");
+const elementSelect = document.getElementById("element-select");
+const coordinateOutput = document.getElementById("coordinate-output");
+const moveSelectedButton = document.getElementById("move-selected");
+const toggleDragButton = document.getElementById("toggle-drag");
 
 const draggableElements = Array.from(
     document.querySelectorAll(".draggable-element")
 );
 
 const originalStyles = {};
-let dragEnabled = true;
+let selectedElementId = "clock";
+let editingEnabled = true;
+let dragMode = false;
 let activeDrag = null;
-let selectedElementId = "all";
-let movedDuringInteraction = false;
 let suppressClickUntil = 0;
+let movedDuringInteraction = false;
+let pulseWasAnimating = true;
 
-/* Store original styles for the reset button. */
 draggableElements.forEach(function(element) {
     originalStyles[element.id] = element.getAttribute("style");
 });
 
-/* Restore saved positions. */
-function loadPositions() {
-    try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-
-        draggableElements.forEach(function(element) {
-            if (saved[element.id]) {
-                element.setAttribute("style", saved[element.id]);
-            }
-        });
-    } catch (error) {
-        console.error("Could not load saved positions:", error);
-    }
-}
+/* ---------- Position saving ---------- */
 
 function savePositions() {
     const saved = {};
@@ -457,128 +507,253 @@ function savePositions() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
         setStatus("Positions saved automatically.");
     } catch (error) {
-        setStatus("Unable to save positions in this browser.");
+        setStatus("Could not save positions in this browser.");
     }
 }
 
-/*
- * Convert the selected element to explicit coordinates before dragging.
- * Container children use coordinates relative to the main container.
- * Fixed elements use viewport coordinates.
- */
+function loadPositions() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+        draggableElements.forEach(function(element) {
+            if (Object.prototype.hasOwnProperty.call(saved, element.id)) {
+                element.setAttribute("style", saved[element.id]);
+            }
+        });
+    } catch (error) {
+        console.error("Could not load saved positions:", error);
+    }
+}
+
+/* ---------- Coordinate helpers ---------- */
+
+function isContainerChild(element) {
+    return element.parentElement === mainContainer;
+}
+
+function getPosition(element) {
+    const rect = element.getBoundingClientRect();
+
+    if (isContainerChild(element)) {
+        const parentRect = mainContainer.getBoundingClientRect();
+
+        return {
+            x: rect.left - parentRect.left,
+            y: rect.top - parentRect.top
+        };
+    }
+
+    return {
+        x: rect.left,
+        y: rect.top
+    };
+}
+
 function prepareElement(element) {
     const rect = element.getBoundingClientRect();
-    const style = getComputedStyle(element);
 
-    if (element.parentElement === mainContainer) {
+    if (isContainerChild(element)) {
         const parentRect = mainContainer.getBoundingClientRect();
 
         element.style.position = "absolute";
         element.style.left = (rect.left - parentRect.left) + "px";
         element.style.top = (rect.top - parentRect.top) + "px";
-        element.style.right = "auto";
-        element.style.bottom = "auto";
-        element.style.transform = "none";
     } else {
         element.style.position = "fixed";
         element.style.left = rect.left + "px";
         element.style.top = rect.top + "px";
-        element.style.right = "auto";
-        element.style.bottom = "auto";
-        element.style.transform = "none";
     }
 
-    /* Keep the pulse logo still while it is being positioned. */
+    element.style.right = "auto";
+    element.style.bottom = "auto";
+    element.style.transform = "none";
+
     if (element.id === "pulse-logo") {
+        pulseWasAnimating = getComputedStyle(element).animationName !== "none";
         element.style.animation = "none";
     }
 }
 
-function getPointerPosition(event) {
-    return {
-        x: event.clientX,
-        y: event.clientY
-    };
+function restorePulseAnimation(element) {
+    if (element.id === "pulse-logo" && pulseWasAnimating) {
+        element.style.animation = "";
+    }
+}
+
+function setStatus(message) {
+    editorStatus.textContent = message;
+}
+
+/* ---------- Element selection ---------- */
+
+function getSelectedElement() {
+    return document.getElementById(selectedElementId);
+}
+
+function updateSelectionOutline() {
+    draggableElements.forEach(function(element) {
+        element.classList.toggle(
+            "drag-selected",
+            element.id === selectedElementId && dragMode
+        );
+    });
+}
+
+elementSelect.addEventListener("change", function() {
+    selectedElementId = this.value;
+
+    if (selectedElementId === "all") {
+        selectedElementId = "clock";
+        this.value = "clock";
+        setStatus("Choose one specific element at a time.");
+    } else {
+        setStatus("Selected: " + getSelectedElement().dataset.dragName + ".");
+    }
+
+    updateSelectionOutline();
+
+    if (dragMode) {
+        setStatus(
+            "Selected: " + getSelectedElement().dataset.dragName +
+            ". Drag anywhere on the screen to move it."
+        );
+    }
+});
+
+/* ---------- Dragging system ---------- */
+
+function enterDragMode() {
+    if (!editingEnabled) {
+        setStatus("Unlock editing first.");
+        return;
+    }
+
+    const element = getSelectedElement();
+
+    if (!element) {
+        setStatus("Select an element first.");
+        return;
+    }
+
+    if (
+        element.id === "qr-close-btn" &&
+        !qrOverlay.classList.contains("active")
+    ) {
+        qrOverlay.classList.add("active");
+        document.body.style.overflow = "hidden";
+    }
+
+    dragMode = true;
+    document.body.classList.add("drag-mode");
+    moveSelectedButton.textContent = "Finish Moving Element";
+    moveSelectedButton.classList.add("active-button");
+
+    updateSelectionOutline();
+
+    setStatus(
+        "Moving: " + element.dataset.dragName +
+        ". Drag anywhere outside the editor panel. Press Escape or click Finish Moving Element when done."
+    );
+}
+
+function exitDragMode() {
+    dragMode = false;
+    activeDrag = null;
+
+    document.body.classList.remove("drag-mode");
+
+    moveSelectedButton.textContent = "Move Selected Element";
+    moveSelectedButton.classList.remove("active-button");
+
+    document.removeEventListener("pointermove", moveDrag);
+    document.removeEventListener("pointerup", endDrag);
+    document.removeEventListener("pointercancel", endDrag);
+
+    updateSelectionOutline();
+    syncClockBg();
+
+    setStatus("Editing ready. Select another element or copy the coordinates.");
 }
 
 function startDrag(event) {
-    if (!dragEnabled || event.button !== 0) return;
-
-    const element = event.currentTarget;
-
-    if (selectedElementId !== "all" && element.id !== selectedElementId) {
-        return;
-    }
-
-    if (element.id === "qr-close-btn" &&
-        !qrOverlay.classList.contains("active")) {
-        return;
-    }
-
+    if (!dragMode || !editingEnabled) return;
+    if (event.button !== undefined && event.button !== 0) return;
     if (event.target.closest("#editor-panel")) return;
+    if (event.target.closest("#editor-toggle")) return;
+
+    const element = getSelectedElement();
+    if (!element) return;
 
     event.preventDefault();
 
     prepareElement(element);
 
     const rect = element.getBoundingClientRect();
-    const pointer = getPointerPosition(event);
 
     activeDrag = {
         element: element,
         pointerId: event.pointerId,
-        offsetX: pointer.x - rect.left,
-        offsetY: pointer.y - rect.top,
-        startX: pointer.x,
-        startY: pointer.y,
-        initialLeft: parseFloat(element.style.left) || 0,
-        initialTop: parseFloat(element.style.top) || 0
+        startPointerX: event.clientX,
+        startPointerY: event.clientY,
+        startLeft: parseFloat(element.style.left) || 0,
+        startTop: parseFloat(element.style.top) || 0
     };
 
     movedDuringInteraction = false;
 
-    element.classList.add("drag-selected");
-
     try {
-        element.setPointerCapture(event.pointerId);
+        dragSurface.setPointerCapture(event.pointerId);
     } catch (error) {
-        /* Document-level pointer listeners remain available as fallback. */
+        /* Document listeners provide a fallback. */
     }
 
     document.addEventListener("pointermove", moveDrag, { passive: false });
     document.addEventListener("pointerup", endDrag);
     document.addEventListener("pointercancel", endDrag);
 
-    setStatus("Dragging: " + (element.dataset.dragName || element.id));
+    setStatus("Dragging " + element.dataset.dragName + "...");
 }
 
 function moveDrag(event) {
-    if (!activeDrag) return;
-    if (event.pointerId !== activeDrag.pointerId) return;
+    if (!activeDrag || event.pointerId !== activeDrag.pointerId) return;
 
     event.preventDefault();
 
     const drag = activeDrag;
     const element = drag.element;
 
-    const distanceX = event.clientX - drag.startX;
-    const distanceY = event.clientY - drag.startY;
+    const dx = event.clientX - drag.startPointerX;
+    const dy = event.clientY - drag.startPointerY;
 
-    if (Math.abs(distanceX) > 2 || Math.abs(distanceY) > 2) {
+    if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
         movedDuringInteraction = true;
     }
 
-    let left = event.clientX - drag.offsetX;
-    let top = event.clientY - drag.offsetY;
+    let left = drag.startLeft + dx;
+    let top = drag.startTop + dy;
 
-    if (element.parentElement === mainContainer) {
+    if (isContainerChild(element)) {
         const parentRect = mainContainer.getBoundingClientRect();
-        left -= parentRect.left;
-        top -= parentRect.top;
+
+        /* Account for horizontal page centring and container position. */
+        element.style.left = left + "px";
+        element.style.top = top + "px";
+
+        /* Keep coordinates relative to the container, not the viewport. */
+        if (parentRect.width > 0 && mainContainer.offsetWidth > 0) {
+            const scaleX = parentRect.width / mainContainer.offsetWidth;
+            const scaleY = parentRect.height / mainContainer.offsetHeight;
+
+            if (scaleX && scaleY) {
+                element.style.left = (left / scaleX) + "px";
+                element.style.top = (top / scaleY) + "px";
+            }
+        }
+    } else {
+        element.style.left = left + "px";
+        element.style.top = top + "px";
     }
 
-    element.style.left = left + "px";
-    element.style.top = top + "px";
     element.style.right = "auto";
     element.style.bottom = "auto";
 
@@ -600,58 +775,89 @@ function endDrag(event) {
 
     const element = activeDrag.element;
 
-    element.classList.remove("drag-selected");
-
-    if (movedDuringInteraction) {
-        suppressClickUntil = Date.now() + 350;
-        savePositions();
-    }
-
-    activeDrag = null;
-
     document.removeEventListener("pointermove", moveDrag);
     document.removeEventListener("pointerup", endDrag);
     document.removeEventListener("pointercancel", endDrag);
 
-    syncClockBg();
+    activeDrag = null;
 
-    setStatus(
-        movedDuringInteraction
-            ? "Position saved. You can move another element."
-            : "Ready. Drag an element to move it."
-    );
+    suppressClickUntil = Date.now() + 250;
+
+    restorePulseAnimation(element);
+
+    if (movedDuringInteraction) {
+        savePositions();
+        setStatus("Position saved. Keep moving this element or finish and select another.");
+    } else {
+        setStatus("No movement detected. Drag farther to reposition the element.");
+    }
+
+    syncClockBg();
 }
 
-/* Make the elements draggable. */
-draggableElements.forEach(function(element) {
-    element.style.touchAction = "none";
-    element.style.userSelect = "none";
-    element.style.webkitUserSelect = "none";
-    element.addEventListener("pointerdown", startDrag);
+dragSurface.addEventListener("pointerdown", startDrag);
+
+/* ---------- Lock / unlock editing ---------- */
+
+moveSelectedButton.addEventListener("click", function() {
+    if (dragMode) {
+        exitDragMode();
+    } else {
+        enterDragMode();
+    }
 });
 
-/* Keep the QR button working after dragging is locked. */
+toggleDragButton.addEventListener("click", function() {
+    editingEnabled = !editingEnabled;
+
+    document.body.classList.toggle("layout-locked", !editingEnabled);
+
+    if (!editingEnabled && dragMode) {
+        exitDragMode();
+    }
+
+    toggleDragButton.textContent = editingEnabled
+        ? "Lock Editing"
+        : "Unlock Editing";
+
+    setStatus(
+        editingEnabled
+            ? "Editing unlocked. Select an element to move."
+            : "Editing locked. Your saved positions are preserved."
+    );
+});
+
+/* ---------- QR popup ---------- */
+
 document.getElementById("qr-nav-btn").addEventListener("click", function(event) {
     if (Date.now() < suppressClickUntil) {
         event.preventDefault();
-        event.stopPropagation();
         return;
     }
 
-    if (!dragEnabled) {
-        qrOverlay.classList.add("active");
-        document.body.style.overflow = "hidden";
+    if (editingEnabled) {
+        setStatus("To use the QR button, click Lock Editing first.");
+        return;
     }
+
+    qrOverlay.classList.add("active");
+    document.body.style.overflow = "hidden";
 });
 
-document.getElementById("qr-close-btn").addEventListener("click", function() {
-    if (!dragEnabled && Date.now() >= suppressClickUntil) {
+document.getElementById("qr-close-btn").addEventListener("click", function(event) {
+    if (Date.now() < suppressClickUntil) {
+        event.preventDefault();
+        return;
+    }
+
+    if (!editingEnabled) {
         qrOverlay.classList.remove("active");
         document.body.style.overflow = "";
     }
 });
 
-/* Clock */
+/* ---------- Clock ---------- */
+
 function syncClockBg() {
     if (!clockEl || !clockBgEl || !mainContainer) return;
 
@@ -685,83 +891,45 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-/* Editor controls */
-const editorPanel = document.getElementById("editor-panel");
-const editorToggle = document.getElementById("editor-toggle");
-const editorStatus = document.getElementById("editor-status");
-const elementSelect = document.getElementById("element-select");
-const coordinateOutput = document.getElementById("coordinate-output");
-
-function setStatus(message) {
-    editorStatus.textContent = message;
-}
-
-function selectedElements() {
-    if (selectedElementId === "all") return draggableElements;
-
-    const element = document.getElementById(selectedElementId);
-    return element ? [element] : [];
-}
-
-elementSelect.addEventListener("change", function() {
-    selectedElementId = this.value;
-
-    draggableElements.forEach(function(element) {
-        element.style.outline = "";
-
-        if (selectedElementId !== "all" && element.id === selectedElementId) {
-            element.style.outline = "2px dashed #ff7800";
-        }
-    });
-
-    setStatus(
-        selectedElementId === "all"
-            ? "All elements can be moved."
-            : "Selected element: " + selectedElementId
-    );
-});
-
-document.getElementById("toggle-drag").addEventListener("click", function() {
-    dragEnabled = !dragEnabled;
-
-    document.body.classList.toggle("layout-locked", !dragEnabled);
-
-    this.textContent = dragEnabled ? "Lock Dragging" : "Unlock Dragging";
-
-    setStatus(
-        dragEnabled
-            ? "Dragging enabled."
-            : "Dragging locked. QR buttons are now usable."
-    );
-});
+/* ---------- Coordinates ---------- */
 
 function getCoordinates(element) {
     const rect = element.getBoundingClientRect();
+    const position = getPosition(element);
 
     return {
         id: element.id,
         name: element.dataset.dragName || element.id,
-        x: Math.round(rect.left * 100) / 100,
-        y: Math.round(rect.top * 100) / 100,
+        x: Math.round(position.x * 100) / 100,
+        y: Math.round(position.y * 100) / 100,
+        viewportX: Math.round(rect.left * 100) / 100,
+        viewportY: Math.round(rect.top * 100) / 100,
         width: Math.round(rect.width * 100) / 100,
         height: Math.round(rect.height * 100) / 100,
-        coordinateSystem:
-            element.parentElement === mainContainer
-                ? "main-container"
-                : "viewport"
+        coordinateSystem: isContainerChild(element)
+            ? "main-container"
+            : "viewport"
     };
+}
+
+function getElementsForOutput() {
+    if (elementSelect.value === "all") {
+        return draggableElements;
+    }
+
+    return [getSelectedElement()].filter(Boolean);
 }
 
 document.getElementById("show-coordinates").addEventListener("click", function() {
     coordinateOutput.value = JSON.stringify(
-        selectedElements().map(getCoordinates),
+        getElementsForOutput().map(getCoordinates),
         null,
         2
     );
 
     coordinateOutput.style.display = "block";
 
-    setStatus("Coordinates shown. X and Y are measured from the viewport's top-left.");
+    setStatus("Coordinates displayed. Copy them and send them to me when you're finished.");
 });
 
 document.getElementById("copy-coordinates").addEventListener("click", async function() {
@@ -775,12 +943,16 @@ document.getElementById("copy-coordinates").addEventListener("click", async func
     } catch (error) {
         coordinateOutput.focus();
         coordinateOutput.select();
-        setStatus("Coordinates selected. Press Cmd+C to copy them.");
+        setStatus("Coordinates selected. Press Command+C to copy them.");
     }
 });
 
+/* ---------- Reset positions ---------- */
+
 document.getElementById("reset-positions").addEventListener("click", function() {
     if (!confirm("Reset every element to its original position?")) return;
+
+    exitDragMode();
 
     draggableElements.forEach(function(element) {
         const original = originalStyles[element.id];
@@ -799,8 +971,10 @@ document.getElementById("reset-positions").addEventListener("click", function() 
 
     syncClockBg();
 
-    setStatus("All positions reset.");
+    setStatus("All positions reset to their original CSS settings.");
 });
+
+/* ---------- Editor visibility ---------- */
 
 function hideEditor() {
     document.body.classList.add("editor-hidden");
@@ -822,10 +996,20 @@ editorToggle.addEventListener("click", function() {
     }
 });
 
+/* Escape exits drag mode. */
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape" && dragMode) {
+        exitDragMode();
+    }
+});
+
 window.addEventListener("resize", syncClockBg);
 
-/* Load saved positions before the user starts interacting. */
+/* ---------- Initial setup ---------- */
+
 loadPositions();
+
+elementSelect.value = selectedElementId;
 syncClockBg();
 </script>
 
