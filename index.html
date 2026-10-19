@@ -1,466 +1,533 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#ffd600">
-  <title>Digital Pass</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="./apple.png">
 
-  <style>
-    :root {
-      --main-width: 390px;
-      --header-height: 106px;
-      --yellow-height: 55px;
-    }
+<title>Static UI</title>
 
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* {
+    box-sizing: border-box;
+}
 
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      width: 100%;
-      overflow-x: hidden;
-      background: #fff;
-      font-family: Arial, Helvetica, sans-serif;
-    }
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    overflow-x: hidden;
+}
 
-    body {
-      position: relative;
-      min-height: 100vh;
-      min-height: 100dvh;
-    }
+body {
+    padding-top: env(safe-area-inset-top);
+    font-family: Arial, sans-serif;
+}
 
-    img {
-      display: block;
-      max-width: none;
-      -webkit-user-drag: none;
-      user-select: none;
-    }
+img {
+    image-rendering: auto;
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
 
-    /* Yellow strip across the top of the screen */
-    #yellow-block {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: var(--yellow-height);
-      background: #ffd600;
-      z-index: 1;
-      pointer-events: none;
-    }
+/* Main content */
+.container {
+    position: relative;
+    width: 390px;
+    max-width: 100%;
+    min-height: 1400px;
+    margin: 0 auto;
+    overflow: visible;
+}
 
-    /* Main 390px-wide content area */
-    #main-container {
-      position: relative;
-      width: var(--main-width);
-      max-width: 100%;
-      min-height: 1400px;
-      margin: 0 auto;
-      overflow: visible;
-      background: #fff;
-      z-index: 2;
-    }
+.bg-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 1400px;
+    object-fit: fill;
+    pointer-events: none;
+    z-index: 0;
+}
 
-    /* Background image */
-    #bg-img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 1400px;
-      object-fit: fill;
-      z-index: 0;
-      pointer-events: none;
-    }
+/* Yellow header background */
+#yellow-block {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(55px + env(safe-area-inset-top));
+    background: linear-gradient(
+        to right,
+        #f2b15d,
+        #f1b262,
+        #f1b765,
+        #f3bc6a,
+        #f4c06d,
+        #f4c575,
+        #f7c97b,
+        #f7d281
+    );
+    z-index: 999;
+}
 
-    /* White block near the bottom of the main layout */
-    #white-block {
-      position: absolute;
-      top: 1300px;
-      left: 0;
-      width: 390px;
-      height: 100px;
-      background: #fff;
-      z-index: 1;
-      pointer-events: none;
-    }
+/* White block */
+#white-block {
+    position: absolute;
+    top: 1300px;
+    left: 0;
+    width: 390px;
+    height: 100px;
+    background: #fff;
+    z-index: 9;
+    pointer-events: none;
+}
 
-    /* Header artwork */
-    #header-img {
-      position: fixed;
-      top: calc(-1.72px + env(safe-area-inset-top, 0px));
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(390px, 100vw);
-      height: 106px;
-      object-fit: fill;
-      z-index: 20;
-      pointer-events: none;
-    }
+/* ======================================================
+   ORIGINAL CLOCK — RESTORED
+   ====================================================== */
 
-    /* Clock */
-    #clock {
-      position: absolute;
-      top: 352px;
-      left: 23.05px;
-      width: 155.61px;
-      height: 19.5px;
-      z-index: 10;
-      color: #000;
-      font-size: 16px;
-      line-height: 19.5px;
-      white-space: nowrap;
-      overflow: hidden;
-      pointer-events: none;
-    }
+#clock {
+    position: absolute;
+    top: 352px;
+    left: 23.05px;
+    width: 155.61px;
+    height: 19.5px;
+    font-family: sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #000;
+    z-index: 100;
+    user-select: none;
+    background: transparent;
+    padding: 1px 4px;
+    border-radius: 2px;
+    white-space: nowrap;
+    overflow: visible;
+}
 
-    /* Name artwork */
-    #name-img {
-      position: absolute;
-      top: 151.84px;
-      left: 150.2px;
-      width: 232.94px;
-      height: 177.08px;
-      object-fit: fill;
-      z-index: 5;
-      pointer-events: none;
-    }
+#clock-bg {
+    position: absolute;
+    top: 352px;
+    left: 23.05px;
+    width: 155.61px;
+    height: 19.5px;
+    background: #fff;
+    border-radius: 2px;
+    z-index: 1;
+    pointer-events: none;
+}
 
-    /* Car artwork */
-    #car-img {
-      position: absolute;
-      top: 392.65px;
-      left: 127.41px;
-      width: 205.48px;
-      height: 223.45px;
-      object-fit: fill;
-      z-index: 6;
-      pointer-events: none;
-    }
+/* Name image */
+#name-img {
+    position: absolute;
+    top: 151.84px;
+    left: 150.2px;
+    width: 232.94px;
+    height: 177.08px;
+    object-fit: fill;
+    z-index: 10;
+}
 
-    /* Main lower artwork */
-    #rest-img {
-      position: absolute;
-      top: 613.18px;
-      left: 0.44px;
-      width: 389.05px;
-      height: 538px;
-      object-fit: fill;
-      z-index: 4;
-      pointer-events: none;
-    }
+/* Car image */
+#car-img {
+    position: absolute;
+    top: 392.65px;
+    left: 127.41px;
+    width: 205.48px;
+    height: 223.45px;
+    object-fit: fill;
+    opacity: 0.7;
+    z-index: 10;
+}
 
-    /* Pulse logo: centred responsively */
-    #pulse-logo {
-      position: fixed;
-      top: calc(238.28px + env(safe-area-inset-top, 0px));
-      left: 50%;
-      width: min(223.03px, 70vw);
-      height: auto;
-      aspect-ratio: 223.03 / 194.06;
-      object-fit: contain;
-      transform: translateX(-50%);
-      transform-origin: center;
-      z-index: 30;
-      pointer-events: none;
-      animation: pulse 2s ease-in-out infinite;
-      will-change: transform;
-    }
+/* Rest image */
+#rest-img {
+    position: absolute;
+    top: 613.18px;
+    left: 0.44px;
+    width: 389.05px;
+    height: 538px;
+    object-fit: fill;
+    z-index: 10;
+}
 
-    @keyframes pulse {
-      0%,
-      100% {
+/* ======================================================
+   FIXED ELEMENTS
+   Horizontal positioning remains phone-friendly.
+   ====================================================== */
+
+/* Pulse logo */
+#pulse-logo {
+    position: fixed;
+    top: calc(238.28px + env(safe-area-inset-top));
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(223.03px, 90vw);
+    height: 194.06px;
+    object-fit: contain;
+    filter: brightness(0) invert(80%) sepia(0) saturate(0);
+    transform-origin: center;
+    z-index: 5;
+    animation: pulse-animation 1.6s infinite ease-in-out;
+    pointer-events: auto;
+}
+
+/* Header image */
+#header-img {
+    position: fixed;
+    top: calc(-1.72px + env(safe-area-inset-top));
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(390px, 100vw);
+    height: 106px;
+    object-fit: contain;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Bottom image */
+#bottom-img {
+    position: fixed;
+    top: 540.23px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(390px, 100vw);
+    height: 117.65px;
+    object-fit: contain;
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* QR navigation button */
+#qr-nav-btn {
+    position: fixed;
+    top: calc(555.34px + env(safe-area-inset-top));
+    left: 50%;
+    transform: translateX(77px);
+    width: 80px;
+    height: 63.65px;
+    object-fit: fill;
+    z-index: 200;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Pulse animation */
+@keyframes pulse-animation {
+    0% {
         transform: translateX(-50%) scale(1);
-      }
-
-      50% {
-        transform: translateX(-50%) scale(1.035);
-      }
     }
 
-    /* Bottom artwork */
-    #bottom-img {
-      position: fixed;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      width: min(390px, 100vw);
-      height: auto;
-      aspect-ratio: 390 / 117.65;
-      object-fit: fill;
-      z-index: 40;
-      pointer-events: none;
+    50% {
+        transform: translateX(-50%) scale(1.1);
     }
 
-    /* QR navigation button */
-    #qr-nav-btn {
-      position: fixed;
-      top: calc(555.34px + env(safe-area-inset-top, 0px));
-      left: 50%;
-      transform: translateX(77px);
-      width: 80px;
-      height: 63.65px;
-      object-fit: fill;
-      z-index: 50;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
+    100% {
+        transform: translateX(-50%) scale(1);
     }
+}
 
-    /* QR popup overlay */
-    #qr-overlay {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding:
-        max(20px, env(safe-area-inset-top, 0px))
-        20px
-        max(20px, env(safe-area-inset-bottom, 0px));
-      background: rgba(0, 0, 0, 0.78);
-      z-index: 1000;
+/* Image rendering */
+#bg-img,
+#name-img,
+#car-img,
+#rest-img,
+#header-img,
+#bottom-img,
+#pulse-logo,
+#qr-nav-btn,
+#qr-popup-bg {
+    image-rendering: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+#qr-popup-bg {
+    image-rendering: auto;
+    object-fit: contain;
+}
+
+/* ======================================================
+   QR POPUP
+   ====================================================== */
+
+#qr-popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: #fff;
+    z-index: 2000;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+}
+
+#qr-popup-overlay.active {
+    display: flex;
+}
+
+#qr-popup-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#qr-popup-bg {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100vw;
+    max-height: 100vh;
+    max-height: 100dvh;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+/* Visible close button */
+#qr-close-btn {
+    position: fixed;
+    top: max(12px, env(safe-area-inset-top));
+    right: 12px;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    background: #fff;
+    color: #111;
+    font-family: Arial, sans-serif;
+    font-size: 30px;
+    line-height: 1;
+    z-index: 2001;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 390px) {
+    #name-img {
+        max-width: none;
     }
+}
 
-    #qr-overlay.open {
-      display: flex;
-    }
-
-    #qr-popup-container {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: min(390px, 100%);
-      max-height: 100%;
-    }
-
-    #qrback-img {
-      display: block;
-      width: 100%;
-      max-height: calc(100dvh - 40px);
-      height: auto;
-      object-fit: contain;
-    }
-
-    /* Close control is deliberately visible and usable */
-    #qr-close-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 42px;
-      height: 42px;
-      object-fit: contain;
-      cursor: pointer;
-      z-index: 1002;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.9);
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    /* Prevent the popup from being too large on short screens */
-    @media (max-height: 650px) {
-      #pulse-logo {
-        top: calc(190px + env(safe-area-inset-top, 0px));
-        width: min(190px, 60vw);
-      }
-
-      #qr-nav-btn {
-        top: calc(490px + env(safe-area-inset-top, 0px));
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      #pulse-logo {
+@media (prefers-reduced-motion: reduce) {
+    #pulse-logo {
         animation: none;
-      }
     }
-  </style>
+}
+</style>
 </head>
 
 <body>
-  <div id="yellow-block" aria-hidden="true"></div>
 
-  <main id="main-container">
+<div id="yellow-block"></div>
+
+<div class="container" id="main-container">
     <img
-      id="bg-img"
-      src="background.png"
-      alt=""
-      draggable="false"
+        src="./background.png"
+        class="bg-image"
+        id="bg-img"
+        alt=""
+        draggable="false"
     >
 
-    <div id="white-block" aria-hidden="true"></div>
+    <div id="white-block"></div>
 
-    <div id="clock" aria-label="Current time"></div>
+    <div id="clock-bg"></div>
+
+    <div id="clock">
+        <span id="clock-text"></span>
+    </div>
 
     <img
-      id="name-img"
-      src="name.png"
-      alt=""
-      draggable="false"
+        src="./name.png"
+        id="name-img"
+        alt=""
+        draggable="false"
     >
 
     <img
-      id="car-img"
-      src="car.png"
-      alt=""
-      draggable="false"
+        src="./car.png"
+        id="car-img"
+        alt=""
+        draggable="false"
     >
 
     <img
-      id="rest-img"
-      src="rest.png"
-      alt=""
-      draggable="false"
+        src="./rest.png"
+        id="rest-img"
+        alt=""
+        draggable="false"
     >
-  </main>
+</div>
 
-  <img
-    id="header-img"
-    src="header.png"
-    alt=""
-    draggable="false"
-  >
-
-  <img
-    id="pulse-logo"
-    src="pulse-logo.png"
-    alt=""
-    draggable="false"
-  >
-
-  <img
-    id="bottom-img"
-    src="bottom.png"
-    alt=""
-    draggable="false"
-  >
-
-  <img
+<img
+    src="./button.png"
     id="qr-nav-btn"
-    src="button.png"
     alt="Open QR code"
     role="button"
     tabindex="0"
     draggable="false"
-  >
+>
 
-  <div
-    id="qr-overlay"
-    role="dialog"
-    aria-modal="true"
-    aria-label="QR code"
-  >
+<img
+    src="./bottom.png"
+    id="bottom-img"
+    alt=""
+    draggable="false"
+>
+
+<img
+    src="./pulse-logo.png"
+    id="pulse-logo"
+    alt=""
+    draggable="false"
+>
+
+<img
+    src="./header.png"
+    id="header-img"
+    alt=""
+    draggable="false"
+>
+
+<div id="qr-popup-overlay" aria-hidden="true">
     <div id="qr-popup-container">
-      <img
-        id="qrback-img"
-        src="qrback.png"
-        alt="QR code"
-        draggable="false"
-      >
+        <img
+            src="./qrback.png"
+            id="qr-popup-bg"
+            alt="QR code"
+            draggable="false"
+        >
+    </div>
 
-      <button
+    <button
         id="qr-close-btn"
         type="button"
         aria-label="Close QR popup"
-      >
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-  </div>
+    >&times;</button>
+</div>
 
-  <script>
-    "use strict";
+<script>
+"use strict";
 
-    const clock = document.getElementById("clock");
-    const qrNavButton = document.getElementById("qr-nav-btn");
-    const qrOverlay = document.getElementById("qr-overlay");
-    const qrPopupContainer = document.getElementById("qr-popup-container");
-    const qrCloseButton = document.getElementById("qr-close-btn");
+/* ======================================================
+   ORIGINAL CLOCK LOGIC — RESTORED
+   ====================================================== */
 
-    function updateClock() {
-      if (!clock) return;
+const clockEl = document.getElementById("clock");
+const clockBgEl = document.getElementById("clock-bg");
+const clockTextEl = document.getElementById("clock-text");
+const mainContainer = document.getElementById("main-container");
 
-      const now = new Date();
+function syncClockBg() {
+    if (!clockEl || !clockBgEl || !mainContainer) return;
 
-      clock.textContent = now.toLocaleTimeString("en-AU", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true
-      });
+    const clockRect = clockEl.getBoundingClientRect();
+    const containerRect = mainContainer.getBoundingClientRect();
+
+    clockBgEl.style.left =
+        (clockRect.left - containerRect.left) + "px";
+
+    clockBgEl.style.top =
+        (clockRect.top - containerRect.top) + "px";
+
+    clockBgEl.style.width = clockRect.width + "px";
+    clockBgEl.style.height = clockRect.height + "px";
+}
+
+function updateClock() {
+    const now = new Date();
+
+    let hours = now.getHours();
+    const ampm = hours >= 12 ? "pm" : "am";
+
+    hours = hours % 12 || 12;
+
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+
+    clockTextEl.textContent =
+        `${now.getDate()} ` +
+        `${now.toLocaleString("default", { month: "short" })} ` +
+        `${now.getFullYear()} ${hours}:${minutes}${ampm}`;
+
+    syncClockBg();
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ======================================================
+   QR POPUP BEHAVIOUR
+   ====================================================== */
+
+const qrOverlay = document.getElementById("qr-popup-overlay");
+const qrNavButton = document.getElementById("qr-nav-btn");
+const qrCloseButton = document.getElementById("qr-close-btn");
+
+function openQRPopup() {
+    qrOverlay.classList.add("active");
+    qrOverlay.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+}
+
+function closeQRPopup() {
+    qrOverlay.classList.remove("active");
+    qrOverlay.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+}
+
+qrNavButton.addEventListener("click", openQRPopup);
+
+qrNavButton.addEventListener("keydown", function(event) {
+    if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openQRPopup();
     }
+});
 
-    function openQRPopup() {
-      if (!qrOverlay) return;
+qrCloseButton.addEventListener("click", closeQRPopup);
 
-      qrOverlay.classList.add("open");
-      qrOverlay.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-
-      if (qrCloseButton) {
-        qrCloseButton.focus();
-      }
-    }
-
-    function closeQRPopup() {
-      if (!qrOverlay) return;
-
-      qrOverlay.classList.remove("open");
-      qrOverlay.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-
-      if (qrNavButton) {
-        qrNavButton.focus();
-      }
-    }
-
-    if (qrNavButton) {
-      qrNavButton.addEventListener("click", openQRPopup);
-
-      qrNavButton.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          openQRPopup();
-        }
-      });
-    }
-
-    if (qrCloseButton) {
-      qrCloseButton.addEventListener("click", closeQRPopup);
-    }
-
-    if (qrOverlay) {
-      qrOverlay.addEventListener("click", (event) => {
-        if (event.target === qrOverlay) {
-          closeQRPopup();
-        }
-      });
-    }
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && qrOverlay?.classList.contains("open")) {
+qrOverlay.addEventListener("click", function(event) {
+    if (event.target === qrOverlay) {
         closeQRPopup();
-      }
-    });
+    }
+});
 
-    updateClock();
-    window.setInterval(updateClock, 1000);
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape" && qrOverlay.classList.contains("active")) {
+        closeQRPopup();
+    }
+});
 
-    /*
-      Image handling:
-      Keep the original image files and use browser-native rendering.
-      Do not upscale automatically, because interpolation does not
-      recover real image detail and can make images look softer.
-    */
+/* Keep the clock background aligned after viewport changes. */
+window.addEventListener("resize", syncClockBg);
+window.addEventListener("orientationchange", syncClockBg);
 
-    document.querySelectorAll("img").forEach((img) => {
-      img.addEventListener("error", () => {
+/* Report missing images in the browser console. */
+document.querySelectorAll("img").forEach(function(img) {
+    img.addEventListener("error", function() {
         console.warn("Image failed to load:", img.getAttribute("src"));
-      });
     });
-  </script>
+});
+</script>
+
 </body>
 </html>
