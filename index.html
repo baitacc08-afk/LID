@@ -6,12 +6,16 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="./apple.png">
+
 <title>Static UI</title>
+
 <style>
 * {
     box-sizing: border-box;
 }
-html, body {
+
+html,
+body {
     width: 100%;
     min-height: 100%;
     margin: 0;
@@ -19,26 +23,35 @@ html, body {
     background: #fff;
     overflow-x: hidden;
 }
+
 body {
     padding-top: env(safe-area-inset-top);
     font-family: Arial, sans-serif;
 }
+
 img {
     -webkit-user-drag: none;
     user-select: none;
 }
+
 .container {
     position: relative;
     width: 390px;
     max-width: 100%;
     margin: 0 auto;
 }
+
 .bg-image {
     width: 100%;
     height: auto;
     display: block;
     pointer-events: none;
 }
+
+/* =========================================================
+   MAIN ELEMENTS
+   ========================================================= */
+
 #clock {
     position: absolute;
     top: 352px;
@@ -56,6 +69,7 @@ img {
     border-radius: 2px;
     white-space: nowrap;
 }
+
 #clock-bg {
     position: absolute;
     top: 352px;
@@ -67,6 +81,7 @@ img {
     z-index: 1;
     pointer-events: none;
 }
+
 #white-block {
     position: absolute;
     top: 1300px;
@@ -77,6 +92,7 @@ img {
     z-index: 9;
     user-select: none;
 }
+
 #yellow-block {
     position: fixed;
     top: 0;
@@ -97,6 +113,7 @@ img {
     z-index: 999;
     user-select: none;
 }
+
 #name-img {
     position: absolute;
     top: 151.7px;
@@ -106,6 +123,7 @@ img {
     object-fit: fill;
     z-index: 10;
 }
+
 #car-img {
     position: absolute;
     top: 391.27px;
@@ -116,6 +134,7 @@ img {
     z-index: 10;
     opacity: 0.7;
 }
+
 #rest-img {
     position: absolute;
     top: 612.2px;
@@ -125,32 +144,20 @@ img {
     object-fit: fill;
     z-index: 10;
 }
+
 #pulse-logo {
-
     position: fixed;
-
     top: calc(247.42px + env(safe-area-inset-top));
-
     left: 50%;
-
     transform: translateX(-50%);
-
     width: 200.21px;
-
     height: 174.2px;
-
     max-width: 90vw;
-
     object-fit: contain;
-
     filter: brightness(0) invert(80%) sepia(0) saturate(0);
-
     z-index: 5;
-
     animation: pulse-animation 1.6s infinite ease-in-out;
-
 }
-
 
 #header-img {
     position: fixed;
@@ -162,27 +169,19 @@ img {
     z-index: 1000;
     pointer-events: none;
 }
+
 #bottom-img {
-
     position: fixed;
-
     bottom: 0;
-
     left: 50%;
-
     transform: translateX(-50%);
-
     width: 390px;
-
     max-width: 100vw;
-
     height: 117.65px;
-
     object-fit: contain;
-
     z-index: 100;
-
 }
+
 #qr-nav-btn {
     position: fixed;
     top: 555.35px;
@@ -195,6 +194,7 @@ img {
     transition: opacity 0.2s;
     cursor: pointer;
 }
+
 #qr-close-btn {
     position: fixed;
     top: 0;
@@ -206,11 +206,25 @@ img {
     transition: opacity 0.2s;
     cursor: pointer;
 }
+
 @keyframes pulse-animation {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
+
+/* =========================================================
+   QR POPUP
+   ========================================================= */
+
 #qr-popup-overlay {
     display: none;
     position: fixed;
@@ -223,9 +237,11 @@ img {
     justify-content: center;
     align-items: center;
 }
+
 #qr-popup-overlay.active {
     display: flex;
 }
+
 #qr-popup-container {
     position: relative;
     width: 100%;
@@ -234,6 +250,7 @@ img {
     justify-content: center;
     align-items: center;
 }
+
 #qr-popup-bg {
     max-width: 100vw;
     max-height: 100vh;
@@ -245,85 +262,1349 @@ img {
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
 }
+
+/* =========================================================
+   EDITOR BUTTON AND PANEL
+   ========================================================= */
+
+#editor-toggle {
+    position: fixed;
+    top: calc(65px + env(safe-area-inset-top));
+    right: 12px;
+    z-index: 5001;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    padding: 11px 15px;
+    background: #111;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    touch-action: manipulation;
+}
+
+#editor-toggle.active {
+    background: #f0a52b;
+    color: #111;
+    border-color: #111;
+}
+
+#editor-panel {
+    position: fixed;
+    top: calc(115px + env(safe-area-inset-top));
+    right: 10px;
+    width: min(330px, calc(100vw - 20px));
+    max-height: calc(100dvh - 140px - env(safe-area-inset-top));
+    overflow-y: auto;
+    padding: 15px;
+    background: #171717;
+    color: #fff;
+    border: 2px solid #f0a52b;
+    border-radius: 12px;
+    z-index: 5000;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+    display: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+#editor-panel.open {
+    display: block;
+}
+
+#editor-panel h2 {
+    margin: 0 0 12px;
+    font-size: 19px;
+    color: #f0a52b;
+}
+
+#editor-panel p {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #ddd;
+    margin: 8px 0 12px;
+}
+
+.editor-label {
+    display: block;
+    margin: 12px 0 5px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #f0a52b;
+}
+
+#editor-select,
+#editor-panel button,
+#editor-panel textarea {
+    width: 100%;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    border-radius: 6px;
+}
+
+#editor-select {
+    padding: 10px;
+    color: #111;
+    background: #fff;
+    border: 1px solid #aaa;
+}
+
+.editor-button {
+    display: block;
+    padding: 10px;
+    margin-top: 8px;
+    border: 0;
+    background: #f0a52b;
+    color: #111;
+    font-weight: bold;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.editor-button.secondary {
+    background: #353535;
+    color: #fff;
+    border: 1px solid #777;
+}
+
+.editor-button.danger {
+    background: #9d2929;
+    color: #fff;
+}
+
+#editor-status {
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 5px;
+    background: #292929;
+    color: #ddd;
+    font-size: 12px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+#editor-coordinates {
+    display: none;
+    min-height: 130px;
+    margin-top: 8px;
+    padding: 8px;
+    background: #080808;
+    color: #b8f5b8;
+    border: 1px solid #555;
+    resize: vertical;
+    white-space: pre;
+    overflow: auto;
+}
+
+#editor-coordinates.visible {
+    display: block;
+}
+
+/* =========================================================
+   EDITING MODE
+   ========================================================= */
+
+body.editing {
+    overscroll-behavior: none;
+}
+
+body.editing #pulse-logo {
+    animation: none !important;
+}
+
+body.editing .editable-element {
+    outline: 2px dashed #ff9d00 !important;
+    outline-offset: -2px;
+    cursor: move !important;
+    pointer-events: auto !important;
+    touch-action: none !important;
+}
+
+body.editing #header-img {
+    pointer-events: auto !important;
+}
+
+body.editing #bg-img {
+    pointer-events: auto !important;
+}
+
+body.editing #clock-bg {
+    pointer-events: none !important;
+}
+
+body.editing .editable-element.editor-selected {
+    outline: 3px solid #00aaff !important;
+    outline-offset: -3px;
+}
+
+/* Visible resize handle on the selected element. */
+
+#editor-resize-handle {
+    position: fixed;
+    display: none;
+    width: 28px;
+    height: 28px;
+    background: #00aaff;
+    border: 3px solid #fff;
+    border-radius: 5px;
+    z-index: 5100;
+    cursor: nwse-resize;
+    touch-action: none;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+}
+
+#editor-resize-handle.visible {
+    display: block;
+}
+
+#editor-resize-handle::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    right: 3px;
+    bottom: 3px;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+}
+
+@media (max-width: 500px) {
+    #editor-panel {
+        top: calc(110px + env(safe-area-inset-top));
+        right: 8px;
+        width: min(310px, calc(100vw - 16px));
+        max-height: calc(100dvh - 130px - env(safe-area-inset-top));
+    }
+
+    #editor-toggle {
+        right: 8px;
+    }
+}
 </style>
 </head>
+
 <body>
+
 <div id="yellow-block"></div>
+
 <div class="container" id="main-container">
-    <img src="./background.png" class="bg-image" id="bg-img" alt="Background" draggable="false">
-<div id="white-block"></div>
-<div id="clock-bg"></div>
-<div id="clock">
-    <span id="clock-text"></span>
+    <img
+        src="./background.png"
+        class="bg-image"
+        id="bg-img"
+        alt="Background"
+        draggable="false"
+    >
+
+    <div id="white-block"></div>
+
+    <div id="clock-bg"></div>
+
+    <div id="clock">
+        <span id="clock-text"></span>
+    </div>
+
+    <img
+        src="./name.png"
+        id="name-img"
+        alt="Name Overlay"
+        draggable="false"
+    >
+
+    <img
+        src="./car.png"
+        id="car-img"
+        alt="Car Overlay"
+        draggable="false"
+    >
+
+    <img
+        src="./rest.png"
+        id="rest-img"
+        alt="Rest Overlay"
+        draggable="false"
+    >
 </div>
-<img src="./name.png" id="name-img" alt="Name Overlay" draggable="false">
-<img src="./car.png" id="car-img" alt="Car Overlay" draggable="false">
-<img src="./rest.png" id="rest-img" alt="Rest Overlay" draggable="false">
-</div>
-<img src="./button.png" id="qr-nav-btn" alt="QR Code Button" draggable="false">
-<img src="./bottom.png" id="bottom-img" alt="Bottom" draggable="false">
-<img src="./pulse-logo.png" id="pulse-logo" alt="Pulsing Logo" draggable="false">
-<img src="./header.png" id="header-img" alt="Header" draggable="false">
+
+<img
+    src="./button.png"
+    id="qr-nav-btn"
+    alt="QR Code Button"
+    draggable="false"
+>
+
+<img
+    src="./bottom.png"
+    id="bottom-img"
+    alt="Bottom"
+    draggable="false"
+>
+
+<img
+    src="./pulse-logo.png"
+    id="pulse-logo"
+    alt="Pulsing Logo"
+    draggable="false"
+>
+
+<img
+    src="./header.png"
+    id="header-img"
+    alt="Header"
+    draggable="false"
+>
+
 <div id="qr-popup-overlay">
     <div id="qr-popup-container">
-        <img src="./qrback.png" id="qr-popup-bg" alt="QR Background" draggable="false">
+        <img
+            src="./qrback.png"
+            id="qr-popup-bg"
+            alt="QR Background"
+            draggable="false"
+        >
     </div>
-<img src="./button.png" id="qr-close-btn" alt="Back Button" draggable="false">
+
+    <img
+        src="./button.png"
+        id="qr-close-btn"
+        alt="Back Button"
+        draggable="false"
+    >
 </div>
+
+<!-- EDITOR TOGGLE -->
+
+<button id="editor-toggle" type="button">
+    Edit Layout
+</button>
+
+<!-- EDITOR PANEL -->
+
+<div id="editor-panel">
+
+    <h2>Layout Editor</h2>
+
+    <p>
+        Turn editing on to move elements with your finger or mouse.
+        Select an element below, then drag its blue corner handle to resize it.
+        Changes save automatically in this browser.
+    </p>
+
+    <label class="editor-label" for="editor-select">
+        Select element
+    </label>
+
+    <select id="editor-select">
+        <option value="yellow-block">Yellow header background</option>
+        <option value="white-block">White block</option>
+        <option value="clock">Clock</option>
+        <option value="name-img">Name image</option>
+        <option value="car-img">Car image</option>
+        <option value="rest-img">Rest image</option>
+        <option value="qr-nav-btn">QR navigation button</option>
+        <option value="bottom-img">Bottom image</option>
+        <option value="pulse-logo">Pulse logo</option>
+        <option value="header-img">Header image</option>
+        <option value="qr-close-btn">QR popup close button</option>
+        <option value="bg-img">Background image</option>
+    </select>
+
+    <button
+        class="editor-button"
+        id="editor-mode-button"
+        type="button"
+    >
+        Start Editing
+    </button>
+
+    <div id="editor-status">
+        Editing is off.
+    </div>
+
+    <button
+        class="editor-button secondary"
+        id="editor-save-button"
+        type="button"
+    >
+        Save Layout
+    </button>
+
+    <button
+        class="editor-button secondary"
+        id="editor-export-button"
+        type="button"
+    >
+        Export Coordinates
+    </button>
+
+    <textarea
+        id="editor-coordinates"
+        readonly
+        spellcheck="false"
+        placeholder="Exported coordinates will appear here."
+    ></textarea>
+
+    <button
+        class="editor-button secondary"
+        id="editor-copy-button"
+        type="button"
+    >
+        Copy Coordinates
+    </button>
+
+    <button
+        class="editor-button danger"
+        id="editor-reset-button"
+        type="button"
+    >
+        Reset Original Layout
+    </button>
+
+</div>
+
+<div id="editor-resize-handle" aria-label="Resize selected element"></div>
+
 <script>
 "use strict";
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
+const mainContainer = document.getElementById("main-container");
+
+const clockEl = document.getElementById("clock");
+const clockBgEl = document.getElementById("clock-bg");
+const clockTextEl = document.getElementById("clock-text");
+
+const qrOverlay = document.getElementById("qr-popup-overlay");
+const qrNavButton = document.getElementById("qr-nav-btn");
+const qrCloseButton = document.getElementById("qr-close-btn");
+
+const editorToggle = document.getElementById("editor-toggle");
+const editorPanel = document.getElementById("editor-panel");
+const editorSelect = document.getElementById("editor-select");
+const editorModeButton = document.getElementById("editor-mode-button");
+const editorStatus = document.getElementById("editor-status");
+const editorSaveButton = document.getElementById("editor-save-button");
+const editorExportButton = document.getElementById("editor-export-button");
+const editorCopyButton = document.getElementById("editor-copy-button");
+const editorResetButton = document.getElementById("editor-reset-button");
+const editorCoordinates = document.getElementById("editor-coordinates");
+const resizeHandle = document.getElementById("editor-resize-handle");
+
+const EDITABLE_IDS = [
+    "yellow-block",
+    "white-block",
+    "clock",
+    "name-img",
+    "car-img",
+    "rest-img",
+    "qr-nav-btn",
+    "bottom-img",
+    "pulse-logo",
+    "header-img",
+    "qr-close-btn",
+    "bg-img"
+];
+
+const ELEMENT_NAMES = {
+    "yellow-block": "Yellow header background",
+    "white-block": "White block",
+    "clock": "Clock",
+    "name-img": "Name image",
+    "car-img": "Car image",
+    "rest-img": "Rest image",
+    "qr-nav-btn": "QR navigation button",
+    "bottom-img": "Bottom image",
+    "pulse-logo": "Pulse logo",
+    "header-img": "Header image",
+    "qr-close-btn": "QR popup close button",
+    "bg-img": "Background image"
+};
+
+const LAYOUT_STORAGE_KEY = "static-ui-layout-positions-v5";
+
+let editing = false;
+let selectedElement = null;
+let activePointerOperation = null;
+let originalLayout = {};
+let saveTimeout = null;
+
+/* =========================================================
+   IMAGE DRAG PREVENTION
+   ========================================================= */
+
 document.addEventListener("dragstart", function(event) {
     if (event.target instanceof HTMLImageElement) {
         event.preventDefault();
     }
 });
-/* QR popup functionality. */
-const qrOverlay = document.getElementById("qr-popup-overlay");
-const qrNavButton = document.getElementById("qr-nav-btn");
-const qrCloseButton = document.getElementById("qr-close-btn");
-qrNavButton.addEventListener("click", function() {
-    qrOverlay.classList.add("active");
-    document.body.style.overflow = "hidden";
-});
-qrCloseButton.addEventListener("click", function() {
-    qrOverlay.classList.remove("active");
-    document.body.style.overflow = "";
-});
-/* Allow tapping the popup background to close it. */
-qrOverlay.addEventListener("click", function(event) {
-    if (event.target === qrOverlay) {
-        qrOverlay.classList.remove("active");
-        document.body.style.overflow = "";
+
+/* =========================================================
+   POSITION HELPERS
+   ========================================================= */
+
+function isFixedElement(element) {
+    return window.getComputedStyle(element).position === "fixed";
+}
+
+function getPositioningParent(element) {
+    if (isFixedElement(element)) {
+        return null;
     }
-});
-/* Clock. */
-const mainContainer = document.getElementById("main-container");
-const clockEl = document.getElementById("clock");
-const clockBgEl = document.getElementById("clock-bg");
+
+    return element.offsetParent || mainContainer;
+}
+
+function getElementCoordinates(element) {
+    const rect = element.getBoundingClientRect();
+    const fixed = isFixedElement(element);
+    const parent = getPositioningParent(element);
+
+    let x;
+    let y;
+
+    if (fixed) {
+        x = rect.left;
+        y = rect.top;
+    } else {
+        const parentRect = parent.getBoundingClientRect();
+
+        x = rect.left - parentRect.left + parent.scrollLeft;
+        y = rect.top - parentRect.top + parent.scrollTop;
+    }
+
+    return {
+        x: roundNumber(x),
+        y: roundNumber(y),
+        width: roundNumber(rect.width),
+        height: roundNumber(rect.height),
+        coordinateSystem: fixed ? "viewport" : "main-container"
+    };
+}
+
+function roundNumber(value) {
+    return Math.round(value * 100) / 100;
+}
+
+function setElementPosition(element, x, y) {
+    element.style.left = roundNumber(x) + "px";
+    element.style.top = roundNumber(y) + "px";
+
+    /*
+       Moving the pulse logo overrides its original horizontal centring.
+       Its position is then controlled directly by the editor.
+    */
+    if (element.id === "pulse-logo") {
+        element.style.transform = "none";
+    }
+
+    /*
+       The header image is also allowed to move independently while
+       editing. Its original centring is preserved until it is moved.
+    */
+    if (element.id === "header-img") {
+        element.style.transform = "none";
+    }
+
+    /*
+       The bottom image normally stays centred at the bottom of the
+       screen. Once moved, its position is controlled by the editor.
+    */
+    if (element.id === "bottom-img") {
+        element.style.bottom = "auto";
+        element.style.transform = "none";
+    }
+
+    if (element.id === "clock") {
+        syncClockBg();
+    }
+}
+
+function setElementSize(element, width, height) {
+    const minimumSize = 10;
+
+    width = Math.max(minimumSize, width);
+    height = Math.max(minimumSize, height);
+
+    element.style.width = roundNumber(width) + "px";
+    element.style.height = roundNumber(height) + "px";
+
+    if (element.id === "pulse-logo") {
+        element.style.maxWidth = "none";
+    }
+
+    if (element.id === "bottom-img") {
+        element.style.maxWidth = "none";
+        element.style.bottom = "auto";
+    }
+
+    if (element.id === "header-img") {
+        element.style.maxWidth = "none";
+    }
+
+    if (element.id === "yellow-block") {
+        element.style.height = roundNumber(height) + "px";
+    }
+
+    if (element.id === "clock") {
+        syncClockBg();
+    }
+}
+
+/* =========================================================
+   CLOCK
+   ========================================================= */
+
 function syncClockBg() {
-    if (!clockEl || !clockBgEl || !mainContainer) return;
+    if (!clockEl || !clockBgEl || !mainContainer) {
+        return;
+    }
+
     const clockRect = clockEl.getBoundingClientRect();
     const containerRect = mainContainer.getBoundingClientRect();
-    clockBgEl.style.left = (clockRect.left - containerRect.left) + "px";
-    clockBgEl.style.top = (clockRect.top - containerRect.top) + "px";
+
+    clockBgEl.style.left =
+        (clockRect.left - containerRect.left) + "px";
+
+    clockBgEl.style.top =
+        (clockRect.top - containerRect.top) + "px";
+
     clockBgEl.style.width = clockRect.width + "px";
     clockBgEl.style.height = clockRect.height + "px";
 }
+
 function updateClock() {
     const now = new Date();
+
     let hours = now.getHours();
+
     const ampm = hours >= 12 ? "pm" : "am";
+
     hours = hours % 12 || 12;
+
     const minutes = String(now.getMinutes()).padStart(2, "0");
-    document.getElementById("clock-text").textContent =
+
+    clockTextEl.textContent =
         `${now.getDate()} ` +
         `${now.toLocaleString("default", { month: "short" })} ` +
         `${now.getFullYear()} ${hours}:${minutes}${ampm}`;
+
     syncClockBg();
 }
+
 setInterval(updateClock, 1000);
 updateClock();
-window.addEventListener("resize", syncClockBg);
+
+window.addEventListener("resize", function() {
+    syncClockBg();
+    updateResizeHandle();
+});
+
+/* =========================================================
+   QR POPUP
+   ========================================================= */
+
+function openQRPopup() {
+    if (editing) {
+        return;
+    }
+
+    qrOverlay.classList.add("active");
+    document.body.style.overflow = "hidden";
+}
+
+function closeQRPopup() {
+    qrOverlay.classList.remove("active");
+    document.body.style.overflow = "";
+}
+
+qrNavButton.addEventListener("click", function(event) {
+    if (editing) {
+        event.preventDefault();
+        return;
+    }
+
+    openQRPopup();
+});
+
+qrCloseButton.addEventListener("click", function(event) {
+    if (editing) {
+        event.preventDefault();
+        return;
+    }
+
+    closeQRPopup();
+});
+
+qrOverlay.addEventListener("click", function(event) {
+    if (!editing && event.target === qrOverlay) {
+        closeQRPopup();
+    }
+});
+
+/* =========================================================
+   CAPTURE ORIGINAL LAYOUT
+   ========================================================= */
+
+function captureOriginalLayout() {
+    const layout = {};
+
+    EDITABLE_IDS.forEach(function(id) {
+        const element = document.getElementById(id);
+
+        if (!element) {
+            return;
+        }
+
+        const coords = getElementCoordinates(element);
+
+        layout[id] = {
+            x: coords.x,
+            y: coords.y,
+            width: coords.width,
+            height: coords.height,
+            position: getComputedPosition(element),
+            transform: element.style.transform || "",
+            bottom: element.style.bottom || "",
+            maxWidth: element.style.maxWidth || ""
+        };
+    });
+
+    return layout;
+}
+
+function getComputedPosition(element) {
+    return window.getComputedStyle(element).position;
+}
+
+/*
+   Store the original CSS values before applying any saved layout.
+*/
+
+function recordInitialLayout() {
+    EDITABLE_IDS.forEach(function(id) {
+        const element = document.getElementById(id);
+
+        if (!element) {
+            return;
+        }
+
+        originalLayout[id] = {
+            left: element.style.left,
+            top: element.style.top,
+            width: element.style.width,
+            height: element.style.height,
+            bottom: element.style.bottom,
+            transform: element.style.transform,
+            maxWidth: element.style.maxWidth
+        };
+    });
+}
+
+/* =========================================================
+   SAVE AND RESTORE LAYOUT
+   ========================================================= */
+
+function getCurrentLayout() {
+    const layout = {};
+
+    EDITABLE_IDS.forEach(function(id) {
+        const element = document.getElementById(id);
+
+        if (!element) {
+            return;
+        }
+
+        const coords = getElementCoordinates(element);
+
+        layout[id] = {
+            x: coords.x,
+            y: coords.y,
+            width: coords.width,
+            height: coords.height,
+            coordinateSystem: coords.coordinateSystem,
+            bottom: element.style.bottom || "",
+            transform: element.style.transform || "",
+            maxWidth: element.style.maxWidth || ""
+        };
+    });
+
+    return layout;
+}
+
+function saveLayout(showMessage = true) {
+    try {
+        const layout = getCurrentLayout();
+
+        localStorage.setItem(
+            LAYOUT_STORAGE_KEY,
+            JSON.stringify(layout)
+        );
+
+        if (showMessage) {
+            setEditorStatus("Layout saved in this browser.");
+        }
+
+        return true;
+    } catch (error) {
+        setEditorStatus(
+            "Could not save the layout. Browser storage may be unavailable."
+        );
+
+        return false;
+    }
+}
+
+function scheduleSave() {
+    clearTimeout(saveTimeout);
+
+    saveTimeout = setTimeout(function() {
+        saveLayout(false);
+        setEditorStatus("Changes saved automatically.");
+    }, 250);
+}
+
+function loadSavedLayout() {
+    let saved;
+
+    try {
+        const stored = localStorage.getItem(LAYOUT_STORAGE_KEY);
+
+        if (!stored) {
+            return;
+        }
+
+        saved = JSON.parse(stored);
+    } catch (error) {
+        console.warn("Could not load saved layout:", error);
+        return;
+    }
+
+    if (!saved || typeof saved !== "object") {
+        return;
+    }
+
+    EDITABLE_IDS.forEach(function(id) {
+        const element = document.getElementById(id);
+        const position = saved[id];
+
+        if (!element || !position) {
+            return;
+        }
+
+        if (
+            Number.isFinite(position.x) &&
+            Number.isFinite(position.y)
+        ) {
+            setElementPosition(
+                element,
+                position.x,
+                position.y
+            );
+        }
+
+        if (
+            Number.isFinite(position.width) &&
+            position.width > 0
+        ) {
+            element.style.width = position.width + "px";
+        }
+
+        if (
+            Number.isFinite(position.height) &&
+            position.height > 0
+        ) {
+            element.style.height = position.height + "px";
+        }
+
+        if (typeof position.bottom === "string" && position.bottom) {
+            element.style.bottom = position.bottom;
+        }
+
+        if (typeof position.transform === "string") {
+            element.style.transform = position.transform;
+        }
+
+        if (typeof position.maxWidth === "string" && position.maxWidth) {
+            element.style.maxWidth = position.maxWidth;
+        }
+
+        /*
+           A saved layout may include the original bottom anchoring.
+           If the user has explicitly moved the element, its saved
+           top/left coordinates take precedence.
+        */
+        if (
+            position.coordinateSystem === "viewport" &&
+            Number.isFinite(position.x) &&
+            Number.isFinite(position.y)
+        ) {
+            element.style.left = position.x + "px";
+            element.style.top = position.y + "px";
+        }
+    });
+
+    syncClockBg();
+}
+
+/* =========================================================
+   EDITOR SELECTION
+   ========================================================= */
+
+function getSelectedElement() {
+    return document.getElementById(editorSelect.value);
+}
+
+function selectElement(id) {
+    const element = document.getElementById(id);
+
+    if (!element) {
+        return;
+    }
+
+    if (selectedElement) {
+        selectedElement.classList.remove("editor-selected");
+    }
+
+    selectedElement = element;
+
+    selectedElement.classList.add("editor-selected");
+
+    editorSelect.value = id;
+
+    updateResizeHandle();
+
+    const coords = getElementCoordinates(element);
+
+    setEditorStatus(
+        ELEMENT_NAMES[id] + "\n" +
+        "X: " + coords.x + " px\n" +
+        "Y: " + coords.y + " px\n" +
+        "Width: " + coords.width + " px\n" +
+        "Height: " + coords.height + " px"
+    );
+}
+
+editorSelect.addEventListener("change", function() {
+    selectElement(editorSelect.value);
+});
+
+/* =========================================================
+   EDITOR MODE ON/OFF
+   ========================================================= */
+
+function setEditingMode(enabled) {
+    editing = enabled;
+
+    document.body.classList.toggle("editing", editing);
+
+    editorToggle.classList.toggle("active", editing);
+
+    editorToggle.textContent = editing
+        ? "Finish Editing"
+        : "Edit Layout";
+
+    editorModeButton.textContent = editing
+        ? "Finish Editing"
+        : "Start Editing";
+
+    if (editing) {
+        qrOverlay.classList.remove("active");
+        document.body.style.overflow = "";
+
+        EDITABLE_IDS.forEach(function(id) {
+            const element = document.getElementById(id);
+
+            if (element) {
+                element.classList.add("editable-element");
+            }
+        });
+
+        selectElement(editorSelect.value);
+
+        setEditorStatus(
+            "Editing is ON.\n" +
+            "Drag an element to move it.\n" +
+            "Drag the blue corner handle to resize it."
+        );
+    } else {
+        if (selectedElement) {
+            selectedElement.classList.remove("editor-selected");
+        }
+
+        EDITABLE_IDS.forEach(function(id) {
+            const element = document.getElementById(id);
+
+            if (element) {
+                element.classList.remove("editable-element");
+                element.classList.remove("editor-selected");
+            }
+        });
+
+        resizeHandle.classList.remove("visible");
+
+        saveLayout(false);
+
+        setEditorStatus("Editing is off. Layout saved.");
+    }
+}
+
+editorToggle.addEventListener("click", function() {
+    editorPanel.classList.toggle("open");
+
+    if (!editorPanel.classList.contains("open")) {
+        setEditingMode(false);
+    }
+});
+
+editorModeButton.addEventListener("click", function() {
+    setEditingMode(!editing);
+});
+
+/* =========================================================
+   MOVE ELEMENTS
+   ========================================================= */
+
+function startMove(event, element) {
+    if (!editing || event.button === 2) {
+        return;
+    }
+
+    /*
+       Do not begin moving elements when interacting with the editor
+       panel or resize handle.
+    */
+    if (
+        event.target.closest("#editor-panel") ||
+        event.target.closest("#editor-resize-handle") ||
+        event.target.closest("#editor-toggle")
+    ) {
+        return;
+    }
+
+    event.preventDefault();
+
+    selectElement(element.id);
+
+    const rect = element.getBoundingClientRect();
+    const coords = getElementCoordinates(element);
+
+    activePointerOperation = {
+        type: "move",
+        pointerId: event.pointerId,
+        element: element,
+        startPointerX: event.clientX,
+        startPointerY: event.clientY,
+        startX: coords.x,
+        startY: coords.y,
+        startWidth: rect.width,
+        startHeight: rect.height
+    };
+
+    try {
+        element.setPointerCapture(event.pointerId);
+    } catch (error) {
+        /* Pointer capture may not be supported by every element. */
+    }
+}
+
+EDITABLE_IDS.forEach(function(id) {
+    const element = document.getElementById(id);
+
+    if (!element) {
+        return;
+    }
+
+    element.addEventListener("pointerdown", function(event) {
+        if (!editing) {
+            return;
+        }
+
+        startMove(event, element);
+    });
+});
+
+/* =========================================================
+   RESIZE HANDLE
+   ========================================================= */
+
+function updateResizeHandle() {
+    if (!editing || !selectedElement) {
+        resizeHandle.classList.remove("visible");
+        return;
+    }
+
+    const rect = selectedElement.getBoundingClientRect();
+
+    resizeHandle.style.left =
+        (rect.right - 14) + "px";
+
+    resizeHandle.style.top =
+        (rect.bottom - 14) + "px";
+
+    resizeHandle.classList.add("visible");
+}
+
+resizeHandle.addEventListener("pointerdown", function(event) {
+    if (!editing || !selectedElement) {
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const rect = selectedElement.getBoundingClientRect();
+
+    activePointerOperation = {
+        type: "resize",
+        pointerId: event.pointerId,
+        element: selectedElement,
+        startPointerX: event.clientX,
+        startPointerY: event.clientY,
+        startWidth: rect.width,
+        startHeight: rect.height
+    };
+
+    try {
+        resizeHandle.setPointerCapture(event.pointerId);
+    } catch (error) {
+        /* Pointer capture fallback is handled by document events. */
+    }
+});
+
+/* =========================================================
+   POINTER MOVEMENT
+   ========================================================= */
+
+function handlePointerMove(event) {
+    if (!activePointerOperation || !editing) {
+        return;
+    }
+
+    if (
+        activePointerOperation.pointerId !== undefined &&
+        event.pointerId !== activePointerOperation.pointerId
+    ) {
+        return;
+    }
+
+    event.preventDefault();
+
+    const operation = activePointerOperation;
+    const element = operation.element;
+
+    const deltaX = event.clientX - operation.startPointerX;
+    const deltaY = event.clientY - operation.startPointerY;
+
+    if (operation.type === "move") {
+        setElementPosition(
+            element,
+            operation.startX + deltaX,
+            operation.startY + deltaY
+        );
+    }
+
+    if (operation.type === "resize") {
+        setElementSize(
+            element,
+            operation.startWidth + deltaX,
+            operation.startHeight + deltaY
+        );
+    }
+
+    updateResizeHandle();
+
+    scheduleSave();
+}
+
+function finishPointerOperation(event) {
+    if (!activePointerOperation) {
+        return;
+    }
+
+    if (
+        event &&
+        activePointerOperation.pointerId !== undefined &&
+        event.pointerId !== activePointerOperation.pointerId
+    ) {
+        return;
+    }
+
+    activePointerOperation = null;
+
+    if (editing) {
+        updateResizeHandle();
+        saveLayout(false);
+        refreshSelectedStatus();
+    }
+}
+
+document.addEventListener("pointermove", handlePointerMove, {
+    passive: false
+});
+
+document.addEventListener("pointerup", finishPointerOperation);
+document.addEventListener("pointercancel", finishPointerOperation);
+
+/* =========================================================
+   SELECTED ELEMENT STATUS
+   ========================================================= */
+
+function setEditorStatus(message) {
+    editorStatus.textContent = message;
+}
+
+function refreshSelectedStatus() {
+    if (!selectedElement) {
+        return;
+    }
+
+    const coords = getElementCoordinates(selectedElement);
+
+    setEditorStatus(
+        ELEMENT_NAMES[selectedElement.id] + "\n" +
+        "X: " + coords.x + " px\n" +
+        "Y: " + coords.y + " px\n" +
+        "Width: " + coords.width + " px\n" +
+        "Height: " + coords.height + " px\n" +
+        "Changes saved automatically."
+    );
+}
+
+/* =========================================================
+   SAVE BUTTON
+   ========================================================= */
+
+editorSaveButton.addEventListener("click", function() {
+    saveLayout(true);
+});
+
+/* =========================================================
+   EXPORT COORDINATES
+   ========================================================= */
+
+function exportCoordinates() {
+    const result = [];
+
+    EDITABLE_IDS.forEach(function(id) {
+        const element = document.getElementById(id);
+
+        if (!element) {
+            return;
+        }
+
+        const coords = getElementCoordinates(element);
+
+        result.push({
+            id: id,
+            name: ELEMENT_NAMES[id],
+            x: coords.x,
+            y: coords.y,
+            viewportX: roundNumber(
+                element.getBoundingClientRect().left
+            ),
+            viewportY: roundNumber(
+                element.getBoundingClientRect().top
+            ),
+            width: coords.width,
+            height: coords.height,
+            coordinateSystem: coords.coordinateSystem
+        });
+    });
+
+    editorCoordinates.value = JSON.stringify(result, null, 2);
+
+    editorCoordinates.classList.add("visible");
+
+    setEditorStatus(
+        "Coordinates exported below. Use Copy Coordinates to copy them."
+    );
+}
+
+editorExportButton.addEventListener("click", exportCoordinates);
+
+editorCopyButton.addEventListener("click", async function() {
+    if (!editorCoordinates.value) {
+        exportCoordinates();
+    }
+
+    try {
+        await navigator.clipboard.writeText(editorCoordinates.value);
+
+        setEditorStatus("Coordinates copied to clipboard.");
+    } catch (error) {
+        editorCoordinates.focus();
+        editorCoordinates.select();
+
+        const copied = document.execCommand("copy");
+
+        setEditorStatus(
+            copied
+                ? "Coordinates copied to clipboard."
+                : "Select the coordinates and copy them manually."
+        );
+    }
+});
+
+/* =========================================================
+   RESET ORIGINAL LAYOUT
+   ========================================================= */
+
+editorResetButton.addEventListener("click", function() {
+    const confirmed = window.confirm(
+        "Reset every editable element to the original positions and sizes in this HTML? This will remove your saved layout from this browser."
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    localStorage.removeItem(LAYOUT_STORAGE_KEY);
+
+    EDITABLE_IDS.forEach(function(id) {
+        const element = document.getElementById(id);
+        const original = originalLayout[id];
+
+        if (!element || !original) {
+            return;
+        }
+
+        element.style.left = original.left;
+        element.style.top = original.top;
+        element.style.width = original.width;
+        element.style.height = original.height;
+        element.style.bottom = original.bottom;
+        element.style.transform = original.transform;
+        element.style.maxWidth = original.maxWidth;
+    });
+
+    syncClockBg();
+
+    if (editing) {
+        selectElement(editorSelect.value);
+    }
+
+    setEditorStatus("Original layout restored.");
+});
+
+/* =========================================================
+   INITIALISE
+   ========================================================= */
+
+recordInitialLayout();
+
+loadSavedLayout();
+
+selectElement(editorSelect.value);
+
+setEditorStatus(
+    "Editing is off. Open Edit Layout to move or resize elements."
+);
+
+syncClockBg();
 </script>
+
 </body>
 </html>
