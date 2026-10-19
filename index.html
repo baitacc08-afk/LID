@@ -1,1869 +1,466 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="./apple.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffd600">
+  <title>Digital Pass</title>
 
-<title>Static UI</title>
+  <style>
+    :root {
+      --main-width: 390px;
+      --header-height: 106px;
+      --yellow-height: 55px;
+    }
 
-<style>
-* {
-    box-sizing: border-box;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-html,
-body {
-    width: 100%;
-    min-height: 100%;
-    margin: 0;
-    padding: 0;
-    background: #fff;
-    overflow-x: hidden;
-}
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      width: 100%;
+      overflow-x: hidden;
+      background: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-body {
-    padding-top: env(safe-area-inset-top);
-    font-family: Arial, sans-serif;
-}
+    body {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
 
-img {
-    image-rendering: auto;
-    -webkit-user-drag: none;
-    user-select: none;
-    -webkit-touch-callout: none;
-}
+    img {
+      display: block;
+      max-width: none;
+      -webkit-user-drag: none;
+      user-select: none;
+    }
 
-.container {
-    position: relative;
-    width: 390px;
-    max-width: 100%;
-    margin: 0 auto;
-}
+    /* Yellow strip across the top of the screen */
+    #yellow-block {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--yellow-height);
+      background: #ffd600;
+      z-index: 1;
+      pointer-events: none;
+    }
 
-.bg-image {
-    display: block;
-    width: 100%;
-    height: auto;
-    pointer-events: none;
-}
+    /* Main 390px-wide content area */
+    #main-container {
+      position: relative;
+      width: var(--main-width);
+      max-width: 100%;
+      min-height: 1400px;
+      margin: 0 auto;
+      overflow: visible;
+      background: #fff;
+      z-index: 2;
+    }
 
-/* ======================================================
-   MAIN INTERFACE
-   ====================================================== */
+    /* Background image */
+    #bg-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 1400px;
+      object-fit: fill;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-#yellow-block {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: calc(55px + env(safe-area-inset-top));
-    background: linear-gradient(
-        to right,
-        #f2b15d,
-        #f1b262,
-        #f1b765,
-        #f3bc6a,
-        #f4c06d,
-        #f4c575,
-        #f7c97b,
-        #f7d281
-    );
-    z-index: 999;
-}
+    /* White block near the bottom of the main layout */
+    #white-block {
+      position: absolute;
+      top: 1300px;
+      left: 0;
+      width: 390px;
+      height: 100px;
+      background: #fff;
+      z-index: 1;
+      pointer-events: none;
+    }
 
-#white-block {
-    position: absolute;
-    top: 1300px;
-    left: 0;
-    width: 390px;
-    height: 100px;
-    background: #fff;
-    z-index: 9;
-}
+    /* Header artwork */
+    #header-img {
+      position: fixed;
+      top: calc(-1.72px + env(safe-area-inset-top, 0px));
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(390px, 100vw);
+      height: 106px;
+      object-fit: fill;
+      z-index: 20;
+      pointer-events: none;
+    }
 
-#clock {
-    position: absolute;
-    top: 352px;
-    left: 16px;
-    width: 155.61px;
-    height: 19.5px;
-    font-family: sans-serif;
-    font-weight: 700;
-    font-size: 15px;
-    color: #000;
-    z-index: 100;
-    user-select: none;
-    background: transparent;
-    padding: 1px 4px;
-    border-radius: 2px;
-    white-space: nowrap;
-}
+    /* Clock */
+    #clock {
+      position: absolute;
+      top: 352px;
+      left: 23.05px;
+      width: 155.61px;
+      height: 19.5px;
+      z-index: 10;
+      color: #000;
+      font-size: 16px;
+      line-height: 19.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      pointer-events: none;
+    }
 
-#clock-bg {
-    position: absolute;
-    top: 352px;
-    left: 16px;
-    width: 155.61px;
-    height: 19.5px;
-    background: #fff;
-    border-radius: 2px;
-    z-index: 1;
-    pointer-events: none;
-}
+    /* Name artwork */
+    #name-img {
+      position: absolute;
+      top: 151.84px;
+      left: 150.2px;
+      width: 232.94px;
+      height: 177.08px;
+      object-fit: fill;
+      z-index: 5;
+      pointer-events: none;
+    }
 
-#name-img {
-    position: absolute;
-    top: 151.59px;
-    left: 149.86px;
-    width: 233.51px;
-    height: 176.84px;
-    object-fit: fill;
-    z-index: 10;
-}
+    /* Car artwork */
+    #car-img {
+      position: absolute;
+      top: 392.65px;
+      left: 127.41px;
+      width: 205.48px;
+      height: 223.45px;
+      object-fit: fill;
+      z-index: 6;
+      pointer-events: none;
+    }
 
-#car-img {
-    position: absolute;
-    top: 391.27px;
-    left: 126.58px;
-    width: 207px;
-    height: 225px;
-    object-fit: fill;
-    opacity: 0.7;
-    z-index: 10;
-}
+    /* Main lower artwork */
+    #rest-img {
+      position: absolute;
+      top: 613.18px;
+      left: 0.44px;
+      width: 389.05px;
+      height: 538px;
+      object-fit: fill;
+      z-index: 4;
+      pointer-events: none;
+    }
 
-#rest-img {
-    position: absolute;
-    top: 613.18px;
-    left: 0.44px;
-    width: 389.05px;
-    height: 538px;
-    object-fit: fill;
-    z-index: 10;
-}
+    /* Pulse logo: centred responsively */
+    #pulse-logo {
+      position: fixed;
+      top: calc(238.28px + env(safe-area-inset-top, 0px));
+      left: 50%;
+      width: min(223.03px, 70vw);
+      height: auto;
+      aspect-ratio: 223.03 / 194.06;
+      object-fit: contain;
+      transform: translateX(-50%);
+      transform-origin: center;
+      z-index: 30;
+      pointer-events: none;
+      animation: pulse 2s ease-in-out infinite;
+      will-change: transform;
+    }
 
-/* ======================================================
-   FIXED ELEMENTS
-   Horizontal positions are centred for phone compatibility.
-   ====================================================== */
-
-#pulse-logo {
-    position: fixed;
-    top: calc(246.33px + env(safe-area-inset-top));
-    left: 50%;
-    transform: translateX(-50%);
-    width: 200.2px;
-    height: 174.2px;
-    max-width: 90vw;
-    object-fit: contain;
-    filter: brightness(0) invert(80%) sepia(0) saturate(0);
-    z-index: 5;
-    animation: pulse-animation 1.6s infinite ease-in-out;
-    pointer-events: auto;
-}
-
-#header-img {
-    position: fixed;
-    top: env(safe-area-inset-top);
-    left: 50%;
-    transform: translateX(-50%);
-    width: 390px;
-    height: 106px;
-    max-width: 100%;
-    object-fit: contain;
-    z-index: 1000;
-    pointer-events: none;
-}
-
-#bottom-img {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 390px;
-    max-width: 100vw;
-    height: 117.65px;
-    object-fit: contain;
-    z-index: 100;
-}
-
-#qr-nav-btn {
-    position: fixed;
-    top: 555.34px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 63.65px;
-    object-fit: fill;
-    z-index: 200;
-    cursor: pointer;
-    touch-action: manipulation;
-}
-
-#qr-close-btn {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 0;
-    object-fit: fill;
-    z-index: 2001;
-    cursor: pointer;
-}
-
-@keyframes pulse-animation {
-    0% {
+    @keyframes pulse {
+      0%,
+      100% {
         transform: translateX(-50%) scale(1);
+      }
+
+      50% {
+        transform: translateX(-50%) scale(1.035);
+      }
     }
 
-    50% {
-        transform: translateX(-50%) scale(1.1);
+    /* Bottom artwork */
+    #bottom-img {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: min(390px, 100vw);
+      height: auto;
+      aspect-ratio: 390 / 117.65;
+      object-fit: fill;
+      z-index: 40;
+      pointer-events: none;
     }
 
-    100% {
-        transform: translateX(-50%) scale(1);
-    }
-}
-
-/* ======================================================
-   IMAGE RENDERING QUALITY
-   ====================================================== */
-
-#bg-img,
-#name-img,
-#car-img,
-#rest-img,
-#header-img,
-#bottom-img,
-#pulse-logo,
-#qr-nav-btn,
-#qr-close-btn,
-#qr-popup-bg {
-    image-rendering: auto;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-}
-
-#qr-popup-bg {
-    image-rendering: auto;
-    object-fit: contain;
-}
-
-/* ======================================================
-   QR POPUP
-   ====================================================== */
-
-#qr-popup-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    background: #fff;
-    z-index: 2000;
-    overflow: hidden;
-    justify-content: center;
-    align-items: center;
-}
-
-#qr-popup-overlay.active {
-    display: flex;
-}
-
-#qr-popup-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#qr-popup-bg {
-    display: block;
-    width: auto;
-    height: auto;
-    max-width: 100vw;
-    max-height: 100vh;
-    max-height: 100dvh;
-    object-fit: contain;
-    pointer-events: none;
-}
-
-/* ======================================================
-   EDITOR BUTTON AND PANEL
-   ====================================================== */
-
-#editor-toggle {
-    position: fixed;
-    top: calc(65px + env(safe-area-inset-top));
-    right: 12px;
-    z-index: 5001;
-    border: 2px solid #fff;
-    border-radius: 8px;
-    padding: 11px 15px;
-    background: #111;
-    color: #fff;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
-    touch-action: manipulation;
-}
-
-#editor-toggle.active {
-    background: #f0a52b;
-    color: #111;
-    border-color: #111;
-}
-
-#editor-panel {
-    position: fixed;
-    top: calc(115px + env(safe-area-inset-top));
-    right: 10px;
-    width: min(330px, calc(100vw - 20px));
-    max-height: calc(100dvh - 140px - env(safe-area-inset-top));
-    overflow-y: auto;
-    padding: 15px;
-    background: #171717;
-    color: #fff;
-    border: 2px solid #f0a52b;
-    border-radius: 12px;
-    z-index: 5000;
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
-    display: none;
-    -webkit-overflow-scrolling: touch;
-}
-
-#editor-panel.open {
-    display: block;
-}
-
-#editor-panel h2 {
-    margin: 0 0 12px;
-    font-size: 19px;
-    color: #f0a52b;
-}
-
-#editor-panel h3 {
-    margin: 0 0 8px;
-    font-size: 15px;
-    color: #f0a52b;
-}
-
-#editor-panel p {
-    font-size: 12px;
-    line-height: 1.5;
-    color: #ddd;
-    margin: 8px 0 12px;
-}
-
-.editor-label {
-    display: block;
-    margin: 12px 0 5px;
-    font-size: 12px;
-    font-weight: bold;
-    color: #f0a52b;
-}
-
-#editor-select,
-#editor-panel button,
-#editor-panel textarea,
-#image-scale-select {
-    width: 100%;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    border-radius: 6px;
-}
-
-#editor-select,
-#image-scale-select {
-    padding: 10px;
-    color: #111;
-    background: #fff;
-    border: 1px solid #aaa;
-}
-
-.editor-button {
-    display: block;
-    padding: 10px;
-    margin-top: 8px;
-    border: 0;
-    background: #f0a52b;
-    color: #111;
-    font-weight: bold;
-    cursor: pointer;
-    touch-action: manipulation;
-}
-
-.editor-button.secondary {
-    background: #353535;
-    color: #fff;
-    border: 1px solid #777;
-}
-
-.editor-button.danger {
-    background: #9d2929;
-    color: #fff;
-}
-
-#editor-status,
-#image-upscale-status {
-    margin-top: 10px;
-    padding: 8px;
-    border-radius: 5px;
-    background: #292929;
-    color: #ddd;
-    font-size: 12px;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-    white-space: pre-line;
-}
-
-#editor-coordinates {
-    display: none;
-    min-height: 130px;
-    margin-top: 8px;
-    padding: 8px;
-    background: #080808;
-    color: #b8f5b8;
-    border: 1px solid #555;
-    resize: vertical;
-    white-space: pre;
-    overflow: auto;
-}
-
-#editor-coordinates.visible {
-    display: block;
-}
-
-#image-tools {
-    margin-top: 14px;
-    padding-top: 12px;
-    border-top: 1px solid #555;
-}
-
-#image-tools button {
-    display: block;
-    width: 100%;
-    margin-top: 8px;
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 13px;
-}
-
-#image-tools .image-button {
-    border: 0;
-    background: #f0a52b;
-    color: #111;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-#image-tools .image-button.secondary {
-    background: #353535;
-    color: #fff;
-    border: 1px solid #777;
-}
-
-#image-tools button:disabled {
-    opacity: 0.5;
-    cursor: wait;
-}
-
-/* ======================================================
-   EDIT MODE
-   ====================================================== */
-
-body.editing {
-    overscroll-behavior: none;
-}
-
-body.editing #pulse-logo {
-    animation: none !important;
-}
-
-body.editing .editable-element {
-    outline: 2px dashed #ff9d00 !important;
-    outline-offset: -2px;
-    cursor: move !important;
-    pointer-events: auto !important;
-    touch-action: none !important;
-}
-
-body.editing #clock-bg {
-    pointer-events: none !important;
-}
-
-body.editing .editable-element.editor-selected {
-    outline: 3px solid #00aaff !important;
-    outline-offset: -3px;
-}
-
-#editor-resize-handle {
-    position: fixed;
-    display: none;
-    width: 28px;
-    height: 28px;
-    background: #00aaff;
-    border: 3px solid #fff;
-    border-radius: 5px;
-    z-index: 5100;
-    cursor: nwse-resize;
-    touch-action: none;
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
-}
-
-#editor-resize-handle.visible {
-    display: block;
-}
-
-#editor-resize-handle::after {
-    content: "";
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    right: 3px;
-    bottom: 3px;
-    border-right: 2px solid #fff;
-    border-bottom: 2px solid #fff;
-}
-
-@media (max-width: 500px) {
-    #editor-panel {
-        top: calc(110px + env(safe-area-inset-top));
-        right: 8px;
-        width: min(310px, calc(100vw - 16px));
-        max-height: calc(100dvh - 130px - env(safe-area-inset-top));
+    /* QR navigation button */
+    #qr-nav-btn {
+      position: fixed;
+      top: calc(555.34px + env(safe-area-inset-top, 0px));
+      left: 50%;
+      transform: translateX(77px);
+      width: 80px;
+      height: 63.65px;
+      object-fit: fill;
+      z-index: 50;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    #editor-toggle {
-        right: 8px;
+    /* QR popup overlay */
+    #qr-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding:
+        max(20px, env(safe-area-inset-top, 0px))
+        20px
+        max(20px, env(safe-area-inset-bottom, 0px));
+      background: rgba(0, 0, 0, 0.78);
+      z-index: 1000;
     }
-}
-</style>
+
+    #qr-overlay.open {
+      display: flex;
+    }
+
+    #qr-popup-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: min(390px, 100%);
+      max-height: 100%;
+    }
+
+    #qrback-img {
+      display: block;
+      width: 100%;
+      max-height: calc(100dvh - 40px);
+      height: auto;
+      object-fit: contain;
+    }
+
+    /* Close control is deliberately visible and usable */
+    #qr-close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      cursor: pointer;
+      z-index: 1002;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Prevent the popup from being too large on short screens */
+    @media (max-height: 650px) {
+      #pulse-logo {
+        top: calc(190px + env(safe-area-inset-top, 0px));
+        width: min(190px, 60vw);
+      }
+
+      #qr-nav-btn {
+        top: calc(490px + env(safe-area-inset-top, 0px));
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #pulse-logo {
+        animation: none;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <div id="yellow-block" aria-hidden="true"></div>
 
-<div id="yellow-block"></div>
+  <main id="main-container">
+    <img
+      id="bg-img"
+      src="background.png"
+      alt=""
+      draggable="false"
+    >
 
-<div class="container" id="main-container">
-    <img src="./background.png" class="bg-image" id="bg-img"
-         alt="Background" draggable="false">
+    <div id="white-block" aria-hidden="true"></div>
 
-    <div id="white-block"></div>
-    <div id="clock-bg"></div>
+    <div id="clock" aria-label="Current time"></div>
 
-    <div id="clock">
-        <span id="clock-text"></span>
-    </div>
+    <img
+      id="name-img"
+      src="name.png"
+      alt=""
+      draggable="false"
+    >
 
-    <img src="./name.png" id="name-img"
-         alt="Name Overlay" draggable="false">
+    <img
+      id="car-img"
+      src="car.png"
+      alt=""
+      draggable="false"
+    >
 
-    <img src="./car.png" id="car-img"
-         alt="Car Overlay" draggable="false">
+    <img
+      id="rest-img"
+      src="rest.png"
+      alt=""
+      draggable="false"
+    >
+  </main>
 
-    <img src="./rest.png" id="rest-img"
-         alt="Rest Overlay" draggable="false">
-</div>
+  <img
+    id="header-img"
+    src="header.png"
+    alt=""
+    draggable="false"
+  >
 
-<img src="./button.png" id="qr-nav-btn"
-     alt="QR Code Button" draggable="false">
+  <img
+    id="pulse-logo"
+    src="pulse-logo.png"
+    alt=""
+    draggable="false"
+  >
 
-<img src="./bottom.png" id="bottom-img"
-     alt="Bottom" draggable="false">
+  <img
+    id="bottom-img"
+    src="bottom.png"
+    alt=""
+    draggable="false"
+  >
 
-<img src="./pulse-logo.png" id="pulse-logo"
-     alt="Pulsing Logo" draggable="false">
+  <img
+    id="qr-nav-btn"
+    src="button.png"
+    alt="Open QR code"
+    role="button"
+    tabindex="0"
+    draggable="false"
+  >
 
-<img src="./header.png" id="header-img"
-     alt="Header" draggable="false">
-
-<div id="qr-popup-overlay">
+  <div
+    id="qr-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-label="QR code"
+  >
     <div id="qr-popup-container">
-        <img src="./qrback.png" id="qr-popup-bg"
-             alt="QR Background" draggable="false">
+      <img
+        id="qrback-img"
+        src="qrback.png"
+        alt="QR code"
+        draggable="false"
+      >
+
+      <button
+        id="qr-close-btn"
+        type="button"
+        aria-label="Close QR popup"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
-
-    <img src="./button.png" id="qr-close-btn"
-         alt="Back Button" draggable="false">
-</div>
-
-<button id="editor-toggle" type="button">Edit Layout</button>
-
-<div id="editor-panel">
-    <h2>Layout Editor</h2>
-
-    <p>
-        Select an element, then drag it to move it.
-        Drag the blue corner handle to resize it.
-        Your changes are saved in this browser.
-    </p>
-
-    <label class="editor-label" for="editor-select">
-        Select element
-    </label>
-
-    <select id="editor-select">
-        <option value="yellow-block">Yellow header background</option>
-        <option value="white-block">White block</option>
-        <option value="clock">Clock</option>
-        <option value="name-img">Name image</option>
-        <option value="car-img">Car image</option>
-        <option value="rest-img">Rest image</option>
-        <option value="qr-nav-btn">QR navigation button</option>
-        <option value="bottom-img">Bottom image</option>
-        <option value="pulse-logo">Pulse logo</option>
-        <option value="header-img">Header image</option>
-        <option value="qr-close-btn">QR popup close button</option>
-        <option value="bg-img">Background image</option>
-    </select>
-
-    <button class="editor-button" id="editor-mode-button" type="button">
-        Start Editing
-    </button>
-
-    <div id="editor-status">Editing is off.</div>
-
-    <button class="editor-button secondary" id="editor-save-button" type="button">
-        Save Layout
-    </button>
-
-    <button class="editor-button secondary" id="editor-export-button" type="button">
-        Export Coordinates
-    </button>
-
-    <textarea id="editor-coordinates" readonly spellcheck="false"
-        placeholder="Exported coordinates will appear here."></textarea>
-
-    <button class="editor-button secondary" id="editor-copy-button" type="button">
-        Copy Coordinates
-    </button>
-
-    <button class="editor-button danger" id="editor-reset-button" type="button">
-        Reset to Supplied Coordinates
-    </button>
-
-    <div id="image-tools">
-        <h3>Image Enhancement</h3>
-
-        <p>
-            Create higher-resolution copies of your images directly in
-            this browser. Enhanced images are previewed on this page.
-            You can download the PNG files to keep them.
-        </p>
-
-        <label class="editor-label" for="image-scale-select">
-            Upscaling factor
-        </label>
-
-        <select id="image-scale-select">
-            <option value="2">2× resolution</option>
-            <option value="3" selected>3× resolution</option>
-        </select>
-
-        <button class="image-button" id="image-upscale-button" type="button">
-            Enhance Images
-        </button>
-
-        <button class="image-button secondary" id="image-download-button" type="button" disabled>
-            Download Enhanced Images
-        </button>
-
-        <button class="image-button secondary" id="image-restore-button" type="button">
-            Restore Original Images
-        </button>
-
-        <div id="image-upscale-status">
-            Original images are currently being displayed.
-        </div>
-    </div>
-</div>
-
-<div id="editor-resize-handle" aria-label="Resize selected element"></div>
-
-<script>
-"use strict";
-
-/* ======================================================
-   CONFIGURATION AND ELEMENT REFERENCES
-   ====================================================== */
-
-const LAYOUT_STORAGE_KEY = "static-ui-layout-positions-v6";
-
-const EDITABLE_IDS = [
-    "yellow-block",
-    "white-block",
-    "clock",
-    "name-img",
-    "car-img",
-    "rest-img",
-    "qr-nav-btn",
-    "bottom-img",
-    "pulse-logo",
-    "header-img",
-    "qr-close-btn",
-    "bg-img"
-];
-
-const ELEMENT_NAMES = {
-    "yellow-block": "Yellow header background",
-    "white-block": "White block",
-    "clock": "Clock",
-    "name-img": "Name image",
-    "car-img": "Car image",
-    "rest-img": "Rest image",
-    "qr-nav-btn": "QR navigation button",
-    "bottom-img": "Bottom image",
-    "pulse-logo": "Pulse logo",
-    "header-img": "Header image",
-    "qr-close-btn": "QR popup close button",
-    "bg-img": "Background image"
-};
-
-const ENHANCEABLE_IMAGE_IDS = [
-    "bg-img",
-    "name-img",
-    "car-img",
-    "rest-img",
-    "qr-nav-btn",
-    "bottom-img",
-    "pulse-logo",
-    "header-img",
-    "qr-close-btn",
-    "qr-popup-bg"
-];
-
-/*
-  These are the supplied coordinates.
-  Fixed elements with desktop viewport X coordinates are centred
-  horizontally on smaller screens while retaining their supplied
-  vertical positions and dimensions.
-*/
-
-const DEFAULT_LAYOUT_COORDINATES = {
-    "yellow-block": {
-        x: 0, y: 0, width: 1327, height: 55,
-        coordinateSystem: "viewport"
-    },
-
-    "white-block": {
-        x: 0, y: 1300, width: 390, height: 100,
-        coordinateSystem: "main-container"
-    },
-
-    "clock": {
-        x: 16, y: 352, width: 155.61, height: 19.5,
-        coordinateSystem: "main-container"
-    },
-
-    "name-img": {
-        x: 149.86, y: 151.59, width: 233.51, height: 176.84,
-        coordinateSystem: "main-container"
-    },
-
-    "car-img": {
-        x: 126.58, y: 391.27, width: 207, height: 225,
-        coordinateSystem: "main-container"
-    },
-
-    "rest-img": {
-        x: 0.44, y: 613.18, width: 389.05, height: 538,
-        coordinateSystem: "main-container"
-    },
-
-    "qr-nav-btn": {
-        x: 623.5, y: 555.34, width: 80, height: 63.65,
-        coordinateSystem: "viewport",
-        centered: true
-    },
-
-    "bottom-img": {
-        x: 468.5, y: 536.35, width: 390, height: 117.65,
-        coordinateSystem: "viewport",
-        centered: true,
-        bottomAnchored: true
-    },
-
-    "pulse-logo": {
-        x: 514.13, y: 246.33, width: 200.2, height: 174.2,
-        coordinateSystem: "viewport",
-        centered: true
-    },
-
-    "header-img": {
-        x: 468.5, y: 0, width: 390, height: 106,
-        coordinateSystem: "viewport",
-        centered: true
-    },
-
-    "qr-close-btn": {
-        x: 0, y: 0, width: 0, height: 0,
-        coordinateSystem: "viewport"
-    },
-
-    "bg-img": {
-        x: 0, y: 0, width: 390, height: 1400,
-        coordinateSystem: "main-container"
-    }
-};
-
-const mainContainer = document.getElementById("main-container");
-const clockEl = document.getElementById("clock");
-const clockBgEl = document.getElementById("clock-bg");
-const clockTextEl = document.getElementById("clock-text");
-
-const qrOverlay = document.getElementById("qr-popup-overlay");
-const qrNavButton = document.getElementById("qr-nav-btn");
-const qrCloseButton = document.getElementById("qr-close-btn");
-
-const editorToggle = document.getElementById("editor-toggle");
-const editorPanel = document.getElementById("editor-panel");
-const editorSelect = document.getElementById("editor-select");
-const editorModeButton = document.getElementById("editor-mode-button");
-const editorStatus = document.getElementById("editor-status");
-const editorSaveButton = document.getElementById("editor-save-button");
-const editorExportButton = document.getElementById("editor-export-button");
-const editorCopyButton = document.getElementById("editor-copy-button");
-const editorResetButton = document.getElementById("editor-reset-button");
-const editorCoordinates = document.getElementById("editor-coordinates");
-const resizeHandle = document.getElementById("editor-resize-handle");
-
-const imageScaleSelect = document.getElementById("image-scale-select");
-const imageUpscaleButton = document.getElementById("image-upscale-button");
-const imageDownloadButton = document.getElementById("image-download-button");
-const imageRestoreButton = document.getElementById("image-restore-button");
-const imageUpscaleStatus = document.getElementById("image-upscale-status");
-
-let editing = false;
-let selectedElement = null;
-let activePointerOperation = null;
-let saveTimeout = null;
-
-const originalLayout = {};
-const enhancedImageBlobs = new Map();
-const enhancedObjectURLs = new Map();
-const originalImageSources = new Map();
-
-/* ======================================================
-   PREVENT IMAGE DRAGGING
-   ====================================================== */
-
-document.addEventListener("dragstart", function(event) {
-    if (event.target instanceof HTMLImageElement) {
-        event.preventDefault();
-    }
-});
-
-/* ======================================================
-   CLOCK
-   ====================================================== */
-
-function syncClockBg() {
-    if (!clockEl || !clockBgEl || !mainContainer) return;
-
-    const clockRect = clockEl.getBoundingClientRect();
-    const containerRect = mainContainer.getBoundingClientRect();
-
-    clockBgEl.style.left =
-        (clockRect.left - containerRect.left) + "px";
-
-    clockBgEl.style.top =
-        (clockRect.top - containerRect.top) + "px";
-
-    clockBgEl.style.width = clockRect.width + "px";
-    clockBgEl.style.height = clockRect.height + "px";
-}
-
-function updateClock() {
-    const now = new Date();
-
-    let hours = now.getHours();
-    const ampm = hours >= 12 ? "pm" : "am";
-
-    hours = hours % 12 || 12;
-
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-
-    clockTextEl.textContent =
-        `${now.getDate()} ` +
-        `${now.toLocaleString("default", { month: "short" })} ` +
-        `${now.getFullYear()} ${hours}:${minutes}${ampm}`;
-
-    syncClockBg();
-}
-
-setInterval(updateClock, 1000);
-updateClock();
-
-/* ======================================================
-   QR POPUP
-   ====================================================== */
-
-function openQRPopup() {
-    if (editing) return;
-
-    qrOverlay.classList.add("active");
-    document.body.style.overflow = "hidden";
-}
-
-function closeQRPopup() {
-    qrOverlay.classList.remove("active");
-    document.body.style.overflow = "";
-}
-
-qrNavButton.addEventListener("click", function(event) {
-    if (editing) {
-        event.preventDefault();
-        return;
+  </div>
+
+  <script>
+    "use strict";
+
+    const clock = document.getElementById("clock");
+    const qrNavButton = document.getElementById("qr-nav-btn");
+    const qrOverlay = document.getElementById("qr-overlay");
+    const qrPopupContainer = document.getElementById("qr-popup-container");
+    const qrCloseButton = document.getElementById("qr-close-btn");
+
+    function updateClock() {
+      if (!clock) return;
+
+      const now = new Date();
+
+      clock.textContent = now.toLocaleTimeString("en-AU", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+      });
     }
 
-    openQRPopup();
-});
+    function openQRPopup() {
+      if (!qrOverlay) return;
 
-qrCloseButton.addEventListener("click", function(event) {
-    if (editing) {
-        event.preventDefault();
-        return;
+      qrOverlay.classList.add("open");
+      qrOverlay.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+
+      if (qrCloseButton) {
+        qrCloseButton.focus();
+      }
     }
 
-    closeQRPopup();
-});
+    function closeQRPopup() {
+      if (!qrOverlay) return;
 
-qrOverlay.addEventListener("click", function(event) {
-    if (!editing && event.target === qrOverlay) {
+      qrOverlay.classList.remove("open");
+      qrOverlay.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+
+      if (qrNavButton) {
+        qrNavButton.focus();
+      }
+    }
+
+    if (qrNavButton) {
+      qrNavButton.addEventListener("click", openQRPopup);
+
+      qrNavButton.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openQRPopup();
+        }
+      });
+    }
+
+    if (qrCloseButton) {
+      qrCloseButton.addEventListener("click", closeQRPopup);
+    }
+
+    if (qrOverlay) {
+      qrOverlay.addEventListener("click", (event) => {
+        if (event.target === qrOverlay) {
+          closeQRPopup();
+        }
+      });
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && qrOverlay?.classList.contains("open")) {
         closeQRPopup();
-    }
-});
-
-/* ======================================================
-   POSITION AND SIZE HELPERS
-   ====================================================== */
-
-function roundNumber(value) {
-    return Math.round(value * 100) / 100;
-}
-
-function isFixedElement(element) {
-    return getComputedStyle(element).position === "fixed";
-}
-
-function getPositioningParent(element) {
-    if (isFixedElement(element)) return null;
-
-    return element.offsetParent || mainContainer;
-}
-
-function getElementCoordinates(element) {
-    const rect = element.getBoundingClientRect();
-    const fixed = isFixedElement(element);
-    const parent = getPositioningParent(element);
-
-    let x;
-    let y;
-
-    if (fixed) {
-        x = rect.left;
-        y = rect.top;
-    } else {
-        const parentRect = parent.getBoundingClientRect();
-
-        x = rect.left - parentRect.left + parent.scrollLeft;
-        y = rect.top - parentRect.top + parent.scrollTop;
-    }
-
-    return {
-        x: roundNumber(x),
-        y: roundNumber(y),
-        width: roundNumber(rect.width),
-        height: roundNumber(rect.height),
-        coordinateSystem: fixed ? "viewport" : "main-container"
-    };
-}
-
-function setElementPosition(element, x, y) {
-    element.style.left = roundNumber(x) + "px";
-    element.style.top = roundNumber(y) + "px";
-
-    if (element.id === "bottom-img") {
-        element.style.bottom = "auto";
-        element.style.transform = "none";
-    }
-
-    if (
-        element.id === "pulse-logo" ||
-        element.id === "header-img" ||
-        element.id === "qr-nav-btn"
-    ) {
-        element.style.transform = "none";
-    }
-
-    if (element.id === "clock") {
-        syncClockBg();
-    }
-}
-
-function setElementSize(element, width, height) {
-    element.style.width = Math.max(0, width) + "px";
-    element.style.height = Math.max(0, height) + "px";
-
-    if (
-        element.id === "pulse-logo" ||
-        element.id === "bottom-img" ||
-        element.id === "header-img" ||
-        element.id === "qr-nav-btn"
-    ) {
-        element.style.maxWidth = "none";
-    }
-
-    if (element.id === "bottom-img") {
-        element.style.bottom = "auto";
-    }
-
-    if (element.id === "clock") {
-        syncClockBg();
-    }
-}
-
-function setEditorStatus(message) {
-    editorStatus.textContent = message;
-}
-
-/* ======================================================
-   DEFAULT LAYOUT
-   ====================================================== */
-
-function applyDefaultLayout() {
-    Object.entries(DEFAULT_LAYOUT_COORDINATES).forEach(
-        function([id, coords]) {
-            const element = document.getElementById(id);
-
-            if (!element) return;
-
-            element.style.left = coords.x + "px";
-            element.style.top = coords.y + "px";
-            element.style.width = coords.width + "px";
-            element.style.height = coords.height + "px";
-
-            if (id === "yellow-block") {
-                element.style.left = "0px";
-                element.style.width = "100%";
-            }
-
-            if (coords.centered) {
-                element.style.left = "50%";
-                element.style.transform = "translateX(-50%)";
-            }
-
-            if (coords.bottomAnchored) {
-                element.style.left = "50%";
-                element.style.top = "auto";
-                element.style.bottom = "0";
-                element.style.transform = "translateX(-50%)";
-            }
-
-            if (id === "header-img") {
-                element.style.top = "env(safe-area-inset-top)";
-            }
-
-            if (id === "pulse-logo") {
-                element.style.top =
-                    "calc(" + coords.y + "px + env(safe-area-inset-top))";
-            }
-
-            if (id === "qr-close-btn") {
-                element.style.width = "0px";
-                element.style.height = "0px";
-            }
-
-            if (id === "bg-img") {
-                element.style.width = "100%";
-                element.style.height = "auto";
-            }
-
-            if (id === "clock") {
-                element.style.left = coords.x + "px";
-                element.style.top = coords.y + "px";
-            }
-        }
-    );
-
-    syncClockBg();
-}
-
-function recordInitialLayout() {
-    EDITABLE_IDS.forEach(function(id) {
-        const element = document.getElementById(id);
-
-        if (!element) return;
-
-        originalLayout[id] = {
-            left: element.style.left,
-            top: element.style.top,
-            width: element.style.width,
-            height: element.style.height,
-            bottom: element.style.bottom,
-            transform: element.style.transform,
-            maxWidth: element.style.maxWidth
-        };
-    });
-}
-
-/* ======================================================
-   SAVE AND LOAD LAYOUT
-   ====================================================== */
-
-function getCurrentLayout() {
-    const layout = {};
-
-    EDITABLE_IDS.forEach(function(id) {
-        const element = document.getElementById(id);
-
-        if (!element) return;
-
-        const coords = getElementCoordinates(element);
-
-        layout[id] = {
-            x: coords.x,
-            y: coords.y,
-            width: coords.width,
-            height: coords.height,
-            coordinateSystem: coords.coordinateSystem,
-            bottom: element.style.bottom || "",
-            transform: element.style.transform || "",
-            maxWidth: element.style.maxWidth || ""
-        };
+      }
     });
 
-    return layout;
-}
+    updateClock();
+    window.setInterval(updateClock, 1000);
 
-function saveLayout(showMessage = true) {
-    try {
-        localStorage.setItem(
-            LAYOUT_STORAGE_KEY,
-            JSON.stringify(getCurrentLayout())
-        );
+    /*
+      Image handling:
+      Keep the original image files and use browser-native rendering.
+      Do not upscale automatically, because interpolation does not
+      recover real image detail and can make images look softer.
+    */
 
-        if (showMessage) {
-            setEditorStatus("Layout saved in this browser.");
-        }
-
-        return true;
-    } catch (error) {
-        setEditorStatus("Unable to save the layout in browser storage.");
-        return false;
-    }
-}
-
-function scheduleSave() {
-    clearTimeout(saveTimeout);
-
-    saveTimeout = setTimeout(function() {
-        saveLayout(false);
-        refreshSelectedStatus();
-    }, 250);
-}
-
-function loadSavedLayout() {
-    let saved;
-
-    try {
-        const stored = localStorage.getItem(LAYOUT_STORAGE_KEY);
-
-        if (!stored) return false;
-
-        saved = JSON.parse(stored);
-    } catch (error) {
-        console.warn("Could not load saved layout:", error);
-        return false;
-    }
-
-    if (!saved || typeof saved !== "object") return false;
-
-    EDITABLE_IDS.forEach(function(id) {
-        const element = document.getElementById(id);
-        const position = saved[id];
-
-        if (!element || !position) return;
-
-        if (
-            Number.isFinite(position.x) &&
-            Number.isFinite(position.y)
-        ) {
-            setElementPosition(element, position.x, position.y);
-        }
-
-        if (
-            Number.isFinite(position.width) &&
-            position.width > 0
-        ) {
-            element.style.width = position.width + "px";
-        }
-
-        if (
-            Number.isFinite(position.height) &&
-            position.height > 0
-        ) {
-            element.style.height = position.height + "px";
-        }
-
-        if (typeof position.bottom === "string") {
-            element.style.bottom = position.bottom;
-        }
-
-        if (typeof position.transform === "string") {
-            element.style.transform = position.transform;
-        }
-
-        if (typeof position.maxWidth === "string") {
-            element.style.maxWidth = position.maxWidth;
-        }
-
-        if (id === "yellow-block") {
-            element.style.width = "100%";
-        }
-
-        if (id === "bg-img") {
-            element.style.width = "100%";
-            element.style.height = "auto";
-        }
+    document.querySelectorAll("img").forEach((img) => {
+      img.addEventListener("error", () => {
+        console.warn("Image failed to load:", img.getAttribute("src"));
+      });
     });
-
-    syncClockBg();
-    return true;
-}
-
-/* ======================================================
-   EDITOR SELECTION
-   ====================================================== */
-
-function selectElement(id) {
-    const element = document.getElementById(id);
-
-    if (!element) return;
-
-    if (selectedElement) {
-        selectedElement.classList.remove("editor-selected");
-    }
-
-    selectedElement = element;
-    selectedElement.classList.add("editor-selected");
-    editorSelect.value = id;
-
-    updateResizeHandle();
-    refreshSelectedStatus();
-}
-
-editorSelect.addEventListener("change", function() {
-    selectElement(editorSelect.value);
-});
-
-/* ======================================================
-   EDITOR MODE
-   ====================================================== */
-
-function setEditingMode(enabled) {
-    editing = enabled;
-
-    document.body.classList.toggle("editing", editing);
-    editorToggle.classList.toggle("active", editing);
-
-    editorToggle.textContent = editing ? "Finish Editing" : "Edit Layout";
-    editorModeButton.textContent = editing ? "Finish Editing" : "Start Editing";
-
-    if (editing) {
-        closeQRPopup();
-
-        EDITABLE_IDS.forEach(function(id) {
-            const element = document.getElementById(id);
-
-            if (element) {
-                element.classList.add("editable-element");
-            }
-        });
-
-        selectElement(editorSelect.value);
-
-        setEditorStatus(
-            "Editing is ON.\n" +
-            "Drag an element to move it.\n" +
-            "Drag the blue handle to resize it."
-        );
-    } else {
-        if (selectedElement) {
-            selectedElement.classList.remove("editor-selected");
-        }
-
-        EDITABLE_IDS.forEach(function(id) {
-            const element = document.getElementById(id);
-
-            if (element) {
-                element.classList.remove("editable-element");
-                element.classList.remove("editor-selected");
-            }
-        });
-
-        resizeHandle.classList.remove("visible");
-
-        saveLayout(false);
-        setEditorStatus("Editing is off. Layout saved.");
-    }
-}
-
-editorToggle.addEventListener("click", function() {
-    editorPanel.classList.toggle("open");
-
-    if (!editorPanel.classList.contains("open")) {
-        setEditingMode(false);
-    }
-});
-
-editorModeButton.addEventListener("click", function() {
-    setEditingMode(!editing);
-});
-
-/* ======================================================
-   MOVE ELEMENTS
-   ====================================================== */
-
-function startMove(event, element) {
-    if (!editing || event.button === 2) return;
-
-    if (
-        event.target.closest("#editor-panel") ||
-        event.target.closest("#editor-resize-handle") ||
-        event.target.closest("#editor-toggle")
-    ) {
-        return;
-    }
-
-    event.preventDefault();
-    selectElement(element.id);
-
-    const coords = getElementCoordinates(element);
-
-    activePointerOperation = {
-        type: "move",
-        pointerId: event.pointerId,
-        element: element,
-        startPointerX: event.clientX,
-        startPointerY: event.clientY,
-        startX: coords.x,
-        startY: coords.y
-    };
-}
-
-EDITABLE_IDS.forEach(function(id) {
-    const element = document.getElementById(id);
-
-    if (!element) return;
-
-    element.addEventListener("pointerdown", function(event) {
-        if (editing) {
-            startMove(event, element);
-        }
-    });
-});
-
-/* ======================================================
-   RESIZE HANDLE
-   ====================================================== */
-
-function updateResizeHandle() {
-    if (!editing || !selectedElement) {
-        resizeHandle.classList.remove("visible");
-        return;
-    }
-
-    const rect = selectedElement.getBoundingClientRect();
-
-    resizeHandle.style.left = (rect.right - 14) + "px";
-    resizeHandle.style.top = (rect.bottom - 14) + "px";
-
-    resizeHandle.classList.add("visible");
-}
-
-resizeHandle.addEventListener("pointerdown", function(event) {
-    if (!editing || !selectedElement) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    const rect = selectedElement.getBoundingClientRect();
-
-    activePointerOperation = {
-        type: "resize",
-        pointerId: event.pointerId,
-        element: selectedElement,
-        startPointerX: event.clientX,
-        startPointerY: event.clientY,
-        startWidth: rect.width,
-        startHeight: rect.height
-    };
-});
-
-/* ======================================================
-   POINTER MOVEMENT
-   ====================================================== */
-
-function handlePointerMove(event) {
-    if (!activePointerOperation || !editing) return;
-
-    if (event.pointerId !== activePointerOperation.pointerId) return;
-
-    event.preventDefault();
-
-    const operation = activePointerOperation;
-    const element = operation.element;
-
-    const deltaX = event.clientX - operation.startPointerX;
-    const deltaY = event.clientY - operation.startPointerY;
-
-    if (operation.type === "move") {
-        setElementPosition(
-            element,
-            operation.startX + deltaX,
-            operation.startY + deltaY
-        );
-    }
-
-    if (operation.type === "resize") {
-        setElementSize(
-            element,
-            operation.startWidth + deltaX,
-            operation.startHeight + deltaY
-        );
-    }
-
-    updateResizeHandle();
-    scheduleSave();
-}
-
-function finishPointerOperation(event) {
-    if (!activePointerOperation) return;
-
-    if (
-        event &&
-        event.pointerId !== activePointerOperation.pointerId
-    ) {
-        return;
-    }
-
-    activePointerOperation = null;
-
-    if (editing) {
-        updateResizeHandle();
-        saveLayout(false);
-        refreshSelectedStatus();
-    }
-}
-
-document.addEventListener("pointermove", handlePointerMove, {
-    passive: false
-});
-
-document.addEventListener("pointerup", finishPointerOperation);
-document.addEventListener("pointercancel", finishPointerOperation);
-
-/* ======================================================
-   SELECTED ELEMENT DETAILS
-   ====================================================== */
-
-function refreshSelectedStatus() {
-    if (!selectedElement) return;
-
-    const coords = getElementCoordinates(selectedElement);
-
-    setEditorStatus(
-        ELEMENT_NAMES[selectedElement.id] + "\n" +
-        "X: " + coords.x + " px\n" +
-        "Y: " + coords.y + " px\n" +
-        "Width: " + coords.width + " px\n" +
-        "Height: " + coords.height + " px"
-    );
-}
-
-/* ======================================================
-   EXPORT COORDINATES
-   ====================================================== */
-
-function exportCoordinates() {
-    const result = [];
-
-    EDITABLE_IDS.forEach(function(id) {
-        const element = document.getElementById(id);
-
-        if (!element) return;
-
-        const coords = getElementCoordinates(element);
-        const rect = element.getBoundingClientRect();
-
-        result.push({
-            id: id,
-            name: ELEMENT_NAMES[id],
-            x: coords.x,
-            y: coords.y,
-            viewportX: roundNumber(rect.left),
-            viewportY: roundNumber(rect.top),
-            width: coords.width,
-            height: coords.height,
-            coordinateSystem: coords.coordinateSystem
-        });
-    });
-
-    editorCoordinates.value = JSON.stringify(result, null, 2);
-    editorCoordinates.classList.add("visible");
-
-    setEditorStatus("Coordinates exported.");
-}
-
-editorSaveButton.addEventListener("click", function() {
-    saveLayout(true);
-});
-
-editorExportButton.addEventListener("click", exportCoordinates);
-
-editorCopyButton.addEventListener("click", async function() {
-    if (!editorCoordinates.value) {
-        exportCoordinates();
-    }
-
-    try {
-        await navigator.clipboard.writeText(editorCoordinates.value);
-        setEditorStatus("Coordinates copied.");
-    } catch (error) {
-        editorCoordinates.focus();
-        editorCoordinates.select();
-
-        const copied = document.execCommand("copy");
-
-        setEditorStatus(
-            copied
-                ? "Coordinates copied."
-                : "Select and copy the coordinates manually."
-        );
-    }
-});
-
-/* ======================================================
-   RESET TO SUPPLIED COORDINATES
-   ====================================================== */
-
-editorResetButton.addEventListener("click", function() {
-    const confirmed = window.confirm(
-        "Reset the layout to the supplied coordinates? " +
-        "This removes the saved layout from this browser."
-    );
-
-    if (!confirmed) return;
-
-    localStorage.removeItem(LAYOUT_STORAGE_KEY);
-
-    applyDefaultLayout();
-    saveLayout(false);
-
-    if (editing) {
-        selectElement(editorSelect.value);
-    }
-
-    setEditorStatus("Supplied coordinates restored and saved.");
-});
-
-/* ======================================================
-   HIGH-QUALITY IMAGE UPSCALING
-   ====================================================== */
-
-/*
-  The browser reads the existing image files, draws them into a
-  higher-resolution canvas with high-quality smoothing, and exports
-  PNG copies. The originals on your server are not changed.
-
-  The enhanced copies are previewed on the current page. Download
-  them and upload them to your website repository to use them
-  permanently on other devices.
-*/
-
-function loadImageFromSource(source) {
-    return new Promise(function(resolve, reject) {
-        const image = new Image();
-
-        image.onload = function() {
-            resolve(image);
-        };
-
-        image.onerror = function() {
-            reject(new Error("Could not load image: " + source));
-        };
-
-        image.src = source;
-    });
-}
-
-function canvasToPNG(canvas) {
-    return new Promise(function(resolve, reject) {
-        canvas.toBlob(function(blob) {
-            if (blob) {
-                resolve(blob);
-            } else {
-                reject(new Error("Could not create PNG image."));
-            }
-        }, "image/png");
-    });
-}
-
-async function upscaleImage(imageElement, factor) {
-    const source =
-        originalImageSources.get(imageElement.id) ||
-        imageElement.getAttribute("src");
-
-    if (!source) {
-        throw new Error("Image source is missing.");
-    }
-
-    const sourceImage = await loadImageFromSource(source);
-
-    const sourceWidth = sourceImage.naturalWidth;
-    const sourceHeight = sourceImage.naturalHeight;
-
-    if (!sourceWidth || !sourceHeight) {
-        throw new Error("Image dimensions are unavailable.");
-    }
-
-    const canvas = document.createElement("canvas");
-
-    canvas.width = Math.round(sourceWidth * factor);
-    canvas.height = Math.round(sourceHeight * factor);
-
-    const context = canvas.getContext("2d");
-
-    if (!context) {
-        throw new Error("Canvas is not available.");
-    }
-
-    context.imageSmoothingEnabled = true;
-    context.imageSmoothingQuality = "high";
-
-    context.clearRect(0, 0, canvas.width, canvas.height);
-
-    context.drawImage(
-        sourceImage,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    const blob = await canvasToPNG(canvas);
-
-    return {
-        id: imageElement.id,
-        blob: blob,
-        width: canvas.width,
-        height: canvas.height
-    };
-}
-
-function revokeEnhancedURLs() {
-    enhancedObjectURLs.forEach(function(url) {
-        URL.revokeObjectURL(url);
-    });
-
-    enhancedObjectURLs.clear();
-}
-
-async function enhanceImages() {
-    const factor = Number(imageScaleSelect.value);
-
-    imageUpscaleButton.disabled = true;
-    imageDownloadButton.disabled = true;
-
-    revokeEnhancedURLs();
-    enhancedImageBlobs.clear();
-
-    let completed = 0;
-    const failures = [];
-
-    imageUpscaleStatus.textContent =
-        "Enhancing images locally. Keep this page open.";
-
-    try {
-        for (const id of ENHANCEABLE_IMAGE_IDS) {
-            const imageElement = document.getElementById(id);
-
-            if (!imageElement) continue;
-
-            if (!originalImageSources.has(id)) {
-                originalImageSources.set(
-                    id,
-                    imageElement.getAttribute("src")
-                );
-            }
-
-            try {
-                const result = await upscaleImage(imageElement, factor);
-                const objectURL = URL.createObjectURL(result.blob);
-
-                enhancedImageBlobs.set(id, result);
-                enhancedObjectURLs.set(id, objectURL);
-
-                /*
-                  Preview the enhanced image immediately.
-                  Its CSS width and height remain unchanged.
-                */
-                imageElement.src = objectURL;
-
-                completed++;
-
-                imageUpscaleStatus.textContent =
-                    "Enhanced " + completed + " image(s).\n" +
-                    "Latest: " + id + "\n" +
-                    "Resolution: " + result.width + " × " +
-                    result.height + " px";
-            } catch (error) {
-                failures.push(id);
-                console.warn("Image enhancement failed:", id, error);
-            }
-        }
-
-        imageDownloadButton.disabled = enhancedImageBlobs.size === 0;
-
-        if (completed > 0) {
-            imageUpscaleStatus.textContent =
-                "Finished enhancing " + completed + " image(s) at " +
-                factor + "× resolution." +
-                (failures.length
-                    ? "\nCould not process: " + failures.join(", ")
-                    : "") +
-                "\nEnhanced images are now previewed on this page. " +
-                "Download them to keep the new files.";
-        } else {
-            imageUpscaleStatus.textContent =
-                "No images were enhanced. Check that the image files " +
-                "exist and can be loaded by this website.";
-        }
-    } finally {
-        imageUpscaleButton.disabled = false;
-    }
-}
-
-function downloadEnhancedImages() {
-    if (enhancedImageBlobs.size === 0) {
-        imageUpscaleStatus.textContent =
-            "Enhance the images first.";
-        return;
-    }
-
-    const entries = Array.from(enhancedImageBlobs.entries());
-
-    entries.forEach(function(entry, index) {
-        const id = entry[0];
-        const result = entry[1];
-
-        /*
-          Keep the original filename so the enhanced PNG can replace
-          the corresponding file in the website repository.
-        */
-        const filename = id === "qr-popup-bg"
-            ? "qrback.png"
-            : id === "bg-img"
-                ? "background.png"
-                : id === "name-img"
-                    ? "name.png"
-                    : id === "car-img"
-                        ? "car.png"
-                        : id === "rest-img"
-                            ? "rest.png"
-                            : id === "qr-nav-btn" || id === "qr-close-btn"
-                                ? "button.png"
-                                : id === "bottom-img"
-                                    ? "bottom.png"
-                                    : id === "pulse-logo"
-                                        ? "pulse-logo.png"
-                                        : id === "header-img"
-                                            ? "header.png"
-                                            : id + ".png";
-
-        setTimeout(function() {
-            const url = URL.createObjectURL(result.blob);
-            const link = document.createElement("a");
-
-            link.href = url;
-            link.download = filename;
-            link.style.display = "none";
-
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-
-            setTimeout(function() {
-                URL.revokeObjectURL(url);
-            }, 120000);
-        }, index * 400);
-    });
-
-    imageUpscaleStatus.textContent =
-        "Download requests have been started. Check your Downloads folder. " +
-        "Your browser may ask you to permit multiple downloads.";
-}
-
-function restoreOriginalImages() {
-    ENHANCEABLE_IMAGE_IDS.forEach(function(id) {
-        const imageElement = document.getElementById(id);
-
-        if (!imageElement) return;
-
-        if (originalImageSources.has(id)) {
-            imageElement.src = originalImageSources.get(id);
-        }
-    });
-
-    revokeEnhancedURLs();
-    enhancedImageBlobs.clear();
-
-    imageDownloadButton.disabled = true;
-
-    imageUpscaleStatus.textContent =
-        "Original images restored. No files on the server were changed.";
-}
-
-imageUpscaleButton.addEventListener("click", enhanceImages);
-imageDownloadButton.addEventListener("click", downloadEnhancedImages);
-imageRestoreButton.addEventListener("click", restoreOriginalImages);
-
-/* ======================================================
-   INITIALISE
-   ====================================================== */
-
-applyDefaultLayout();
-recordInitialLayout();
-
-const hasSavedLayout = loadSavedLayout();
-
-selectElement(editorSelect.value);
-
-setEditorStatus(
-    hasSavedLayout
-        ? "Your previously saved layout has been loaded."
-        : "Supplied coordinates loaded. Open Edit Layout to move or resize."
-);
-
-imageUpscaleStatus.textContent =
-    "Original images are displayed. Select 2× or 3×, then tap Enhance Images.";
-
-window.addEventListener("resize", function() {
-    syncClockBg();
-    updateResizeHandle();
-});
-
-syncClockBg();
-</script>
-
+  </script>
 </body>
 </html>
